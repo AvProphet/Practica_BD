@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="766.0" prefWidth="1215.0" stylesheets="Style.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.home.Controller">
+   <children>
+      <AnchorPane fx:id="moviePane" layoutX="84.0" prefHeight="766.0" prefWidth="1131.0" style="-fx-background-color: #1C191F;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label alignment="CENTER" layoutX="405.0" layoutY="255.0" prefHeight="256.0" prefWidth="319.0" text="Movie management" AnchorPane.bottomAnchor="255.0" AnchorPane.leftAnchor="405.0" AnchorPane.rightAnchor="407.0" AnchorPane.topAnchor="255.0">
+               <font>
+                  <Font size="34.0" />
+               </font>
+            </Label>
+         </children></AnchorPane>
+      <AnchorPane fx:id="genrePane" layoutX="75.0" layoutY="10.0" prefHeight="766.0" prefWidth="1131.0" style="-fx-background-color: #1C191F;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label alignment="CENTER" layoutX="405.0" layoutY="255.0" prefHeight="256.0" prefWidth="319.0" text="Genre management" AnchorPane.bottomAnchor="255.0" AnchorPane.leftAnchor="405.0" AnchorPane.rightAnchor="407.0" AnchorPane.topAnchor="255.0">
+               <font>
+                  <Font size="34.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="actorPane" prefHeight="766.0" prefWidth="1131.0" style="-fx-background-color: #1C191F;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="64.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label alignment="CENTER" layoutX="405.0" layoutY="255.0" prefHeight="256.0" prefWidth="319.0" text="Actor management" AnchorPane.bottomAnchor="255.0" AnchorPane.leftAnchor="405.0" AnchorPane.rightAnchor="407.0" AnchorPane.topAnchor="255.0">
+               <font>
+                  <Font size="34.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="rolePane" layoutX="10.0" layoutY="10.0" prefHeight="766.0" prefWidth="1131.0" style="-fx-background-color: #1C191F;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="64.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <Label alignment="CENTER" layoutX="405.0" layoutY="255.0" prefHeight="256.0" prefWidth="319.0" text="Role management" AnchorPane.bottomAnchor="255.0" AnchorPane.leftAnchor="405.0" AnchorPane.rightAnchor="407.0" AnchorPane.topAnchor="255.0">
+               <font>
+                  <Font size="34.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="menuList" layoutX="64.0" prefHeight="766.0" prefWidth="189.0" style="-fx-background-color: #2C2E37;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="64.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXButton fx:id="mngMovies" alignment="BASELINE_LEFT" layoutY="64.0" onAction="#handleButtonAction" prefHeight="65.0" prefWidth="189.0" styleClass="sideBarItem" text="Manage movies" textFill="WHITE">
+               <graphic>
+                  <FontAwesomeIcon fill="#e78a00" glyphName="FILM" size="35" wrappingWidth="45.5" />
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="mngGenres" alignment="BASELINE_LEFT" layoutY="132.0" prefHeight="65.0" prefWidth="189.0" styleClass="sideBarItem" text="Manage genres" textFill="WHITE">
+               <graphic>
+                  <FontAwesomeIcon fill="#e78a00" glyphName="FILE_TEXT" size="35" wrappingWidth="45.5" />
+               </graphic>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+            </JFXButton>
+            <JFXButton fx:id="mngActors" alignment="BASELINE_LEFT" layoutY="197.0" prefHeight="65.0" prefWidth="189.0" styleClass="sideBarItem" text="Manage actors" textFill="WHITE">
+               <graphic>
+                  <FontAwesomeIcon fill="#e78a00" glyphName="USERS" size="35" wrappingWidth="45.5" />
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="mngRoles" alignment="BASELINE_LEFT" layoutX="-1.0" layoutY="260.0" prefHeight="65.0" prefWidth="189.0" styleClass="sideBarItem" text="Manage roles" textFill="WHITE">
+               <graphic>
+                  <FontAwesomeIcon fill="#e78a00" glyphName="USER_PLUS" size="35" wrappingWidth="45.5" />
+               </graphic>
+            </JFXButton>
+         </children>
+      </AnchorPane>
+      <AnchorPane prefHeight="766.0" prefWidth="64.0" style="-fx-background-color: #2C2E37;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <JFXButton fx:id="closeMenu" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" layoutX="1.0" layoutY="25.0" prefHeight="45.0" prefWidth="64.0" styleClass="sideBarItem" text="openMenu">
+               <graphic>
+                  <FontAwesomeIcon fill="#e78a00" glyphName="LIST" size="35" />
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="openMenu" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" layoutX="1.0" layoutY="25.0" prefHeight="45.0" prefWidth="64.0" styleClass="sideBarItem" text="closeMenu">
+               <graphic>
+                  <FontAwesomeIcon fill="#e78a00" glyphName="LIST" size="35" />
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="homeButton" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" layoutY="79.0" onAction="#handleButtonAction" prefHeight="45.0" prefWidth="64.0" styleClass="sideBarItem" text="Home">
+               <graphic>
+                  <FontAwesomeIcon fill="#e78a00" glyphName="HOME" size="35" text="" />
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="helpMenu" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" layoutY="654.0" onAction="#handleButtonActionHelp" prefHeight="45.0" prefWidth="64.0" styleClass="sideBarItem" text="Help" AnchorPane.bottomAnchor="67.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="1.0">
+               <graphic>
+                  <FontAwesomeIcon fill="#e78a00" glyphName="QUESTION_CIRCLE" size="35" text="" />
+               </graphic>
+            </JFXButton>
+            <JFXButton fx:id="exit" alignment="CENTER" contentDisplay="GRAPHIC_ONLY" layoutY="707.0" prefHeight="45.0" prefWidth="64.0" styleClass="sideBarItem" text="Exit" AnchorPane.bottomAnchor="14.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="1.0">
+               <graphic>
+                  <FontAwesomeIcon fill="#e78a00" glyphName="POWER_OFF" size="35" />
+               </graphic>
+            </JFXButton>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="helpMenuPane" layoutX="64.0" layoutY="432.0" prefHeight="249.0" prefWidth="272.0" style="-fx-background-color: #4A4D5C; -fx-background-radius: 15;" visible="false" AnchorPane.bottomAnchor="85.0" AnchorPane.leftAnchor="64.0">
+         <children>
+            <JFXButton fx:id="backFromHelp" contentDisplay="GRAPHIC_ONLY" layoutY="14.0">
+               <graphic>
+                  <FontAwesomeIcon fill="#e78a00" glyphName="ARROW_LEFT" size="35" />
+               </graphic>
+            </JFXButton>
+            <Label layoutX="15.0" layoutY="207.0" prefHeight="28.0" prefWidth="51.0" text="Edit" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </Label>
+            <Label layoutX="15.0" layoutY="68.0" prefHeight="28.0" prefWidth="51.0" text="ToDo" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </Label>
+            <Label layoutX="15.0" layoutY="136.0" prefHeight="28.0" prefWidth="51.0" text="Ideas" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
+            </Label>
+            <Label layoutX="15.0" layoutY="164.0" text="some idea" textFill="WHITE" />
+            <Label layoutX="14.0" layoutY="105.0" text="keep working" textFill="WHITE">
+               <graphic>
+                  <FontAwesomeIcon fill="#e78a00" glyphName="BOOKMARK_ALT" size="20" />
+               </graphic>
+            </Label>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
