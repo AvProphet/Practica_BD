@@ -25,6 +25,12 @@ public class Controller implements Initializable {
     @FXML
     private AnchorPane moviePane, genrePane, actorPane, rolePane, homePane;
 
+    @FXML
+    private AnchorPane modRelPane;
+
+    @FXML
+    private JFXButton backFromModRel, goToModRel, goToModRel1, goToModRel2, goToModRel3;
+
 
     @FXML
     private void handleButtonAction(ActionEvent event) {
@@ -86,6 +92,23 @@ public class Controller implements Initializable {
                 helpMenuPane.setVisible(true);
             } else if (helpMenuPane.visibleProperty().getValue().equals(true)) {
                 helpMenuPane.setVisible(false);
+            }
+        }
+    }
+
+    @FXML
+    private void handleButtonActionModRel(ActionEvent event) {
+        if (event.getSource() == goToModRel) {
+            modRelPane.setVisible(true);
+        } else if (event.getSource() == goToModRel1) {
+            modRelPane.setVisible(true);
+        } else if (event.getSource() == goToModRel2) {
+            modRelPane.setVisible(true);
+        } else if (event.getSource() == goToModRel3) {
+            modRelPane.setVisible(true);
+        } else {
+            if (event.getSource() == backFromModRel) {
+                modRelPane.setVisible(false);
             }
         }
     }

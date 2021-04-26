@@ -38,6 +38,8 @@ public class StageInitializer implements ApplicationListener<StageReadyEvent> {
         Scene scene = new Scene(parent);
 
         stage.setScene(scene);
+        stage.setMinHeight(800);
+        stage.setMinWidth(1230);
         stage.show();
     }
 }
