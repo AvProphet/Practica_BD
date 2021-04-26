@@ -17,22 +17,13 @@ public class Controller implements Initializable {
 
 
     @FXML
-    private JFXButton mngMovies, mngGenres, mngRoles, mngActors, homeButton, exit, closeMenu, openMenu, helpMenu;
+    private JFXButton mngMovies, mngGenres, mngActors, mngRoles, homeButton, exit, closeMenu, openMenu, helpMenu;
 
     @FXML
     private AnchorPane menuList, helpMenuPane;
 
     @FXML
-    private AnchorPane moviePane;
-
-    @FXML
-    private AnchorPane genrePane;
-
-    @FXML
-    private AnchorPane actorPane;
-
-    @FXML
-    private AnchorPane rolePane;
+    private AnchorPane moviePane, genrePane, actorPane, rolePane, homePane;
 
 
     @FXML
@@ -41,18 +32,46 @@ public class Controller implements Initializable {
 
             moviePane.setVisible(true);
 
-        }else if (event.getSource() == mngGenres) {
+            genrePane.setVisible(false);
+            actorPane.setVisible(false);
+            rolePane.setVisible(false);
+            homePane.setVisible(false);
+
+        } else if (event.getSource() == mngGenres) {
 
             genrePane.setVisible(true);
 
-        }else if (event.getSource() == mngActors) {
+            moviePane.setVisible(false);
+            actorPane.setVisible(false);
+            rolePane.setVisible(false);
+            homePane.setVisible(false);
+
+        } else if (event.getSource() == mngActors) {
 
             actorPane.setVisible(true);
 
-        } else if (event.getSource() == homeButton) {
+            moviePane.setVisible(false);
+            genrePane.setVisible(false);
+            rolePane.setVisible(false);
+            homePane.setVisible(false);
+
+        } else if (event.getSource() == mngRoles) {
+
+            rolePane.setVisible(true);
 
             moviePane.setVisible(false);
             genrePane.setVisible(false);
+            actorPane.setVisible(false);
+            homePane.setVisible(false);
+
+        } else if (event.getSource() == homeButton) {
+
+            homePane.setVisible(true);
+
+            moviePane.setVisible(false);
+            genrePane.setVisible(false);
+            actorPane.setVisible(false);
+            rolePane.setVisible(false);
 
             if (helpMenuPane.visibleProperty().getValue().equals(true)) {
                 helpMenuPane.setVisible(false);
