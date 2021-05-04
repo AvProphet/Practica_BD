@@ -1,15 +1,21 @@
-package com.home;
+package com.home.controllers;
 
+import com.home.entity.Role;
+import com.home.entityList.RoleList;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
 import javafx.animation.TranslateTransition;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
 import java.net.URL;
+import java.util.List;
 import java.util.ResourceBundle;
 
 @Component
@@ -30,6 +36,9 @@ public class Controller implements Initializable {
 
     @FXML
     private JFXButton backFromModRel, goToModRel, goToModRel1, goToModRel2, goToModRel3;
+
+    @FXML
+    private JFXListView<Role> roleRolesList;
 
 
     @FXML
@@ -113,8 +122,24 @@ public class Controller implements Initializable {
         }
     }
 
+
+
+    private static List<Role> getRoleList() {
+
+        RestTemplate restTemplate = new RestTemplate();
+
+        RoleList response = restTemplate.getForObject(
+                "http://localhost:4001/role/",
+                RoleList.class);
+        List<Role> roles = response.getRoles();
+
+        return roles;
+    }
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        roleRolesList.setItems(FXCollections.observableArrayList(getRoleList()));
+
         exit.setOnMouseClicked(event -> System.exit(0));
 
         menuList.setTranslateX(-189);
