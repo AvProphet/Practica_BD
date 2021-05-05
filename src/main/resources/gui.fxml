@@ -407,7 +407,7 @@
             </Label>
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="rolePane" prefHeight="766.0" prefWidth="1150.0" style="-fx-background-color: #1C191F;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <AnchorPane fx:id="rolePane" prefHeight="766.0" prefWidth="1150.0" style="-fx-background-color: #1C191F;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
             <Label alignment="CENTER" layoutX="407.0" prefHeight="56.0" prefWidth="338.0" text="Role management" textFill="#ffaf00" AnchorPane.leftAnchor="407.0" AnchorPane.rightAnchor="405.0" AnchorPane.topAnchor="0.0">
                <font>
@@ -430,7 +430,7 @@
                   </Text>
                </graphic>
             </Label>
-            <JFXListView editable="true" layoutX="871.0" layoutY="85.0" prefHeight="256.0" prefWidth="235.0" AnchorPane.rightAnchor="44.0" AnchorPane.topAnchor="85.0" />
+            <JFXListView fx:id="roleRoleListBox" editable="true" layoutX="871.0" layoutY="85.0" prefHeight="256.0" prefWidth="235.0" AnchorPane.rightAnchor="44.0" AnchorPane.topAnchor="85.0" />
             <Text fill="WHITE" layoutX="941.0" layoutY="78.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Roles List" AnchorPane.rightAnchor="126.529296875" AnchorPane.topAnchor="56.41796875">
                <font>
                   <Font size="20.0" />

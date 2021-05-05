@@ -1,12 +1,17 @@
 package com.home;
 
+import com.home.entity.Role;
+import com.home.repository.RoleRepository;
 import com.jfoenix.controls.JFXButton;
+import com.jfoenix.controls.JFXListView;
 import javafx.animation.TranslateTransition;
+import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.net.URL;
@@ -14,6 +19,9 @@ import java.util.ResourceBundle;
 
 @Component
 public class Controller implements Initializable {
+
+    @Autowired
+    private RoleRepository roleRepository;
 
 
     @FXML
@@ -30,6 +38,9 @@ public class Controller implements Initializable {
 
     @FXML
     private JFXButton backFromModRel, goToModRel, goToModRel1, goToModRel2, goToModRel3;
+
+    @FXML
+    private JFXListView<Role> roleRoleListBox;
 
 
     @FXML
@@ -115,6 +126,9 @@ public class Controller implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+
+        roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
+
         exit.setOnMouseClicked(event -> System.exit(0));
 
         menuList.setTranslateX(-189);
