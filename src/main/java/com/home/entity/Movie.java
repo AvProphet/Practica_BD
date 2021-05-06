@@ -2,6 +2,7 @@ package com.home.entity;
 
 import javax.persistence.*;
 import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class Movie {
 
     private String title;
     private String es_title;
-    private String release_date;
+    private LocalDate release_date;
     private String duration;
     private String synopsis;
     private File movie_poster;
@@ -31,7 +32,7 @@ public class Movie {
         movieGens = new ArrayList<>();
     }
 
-    public Movie(Long idMovie, String title, String esTitle, String releaseDate, String duration, String synopsis, File moviePoster) {
+    public Movie(Long idMovie, String title, String esTitle, LocalDate releaseDate, String duration, String synopsis, File moviePoster) {
         this.id_movie = idMovie;
         this.title = title;
         this.es_title = esTitle;
@@ -65,11 +66,11 @@ public class Movie {
         this.es_title = esTitle;
     }
 
-    public String getRelease_date() {
+    public LocalDate getRelease_date() {
         return release_date;
     }
 
-    public void setRelease_date(String releaseDate) {
+    public void setRelease_date(LocalDate releaseDate) {
         this.release_date = releaseDate;
     }
 

@@ -54,7 +54,7 @@
                   <Font size="20.0" />
                </font>
             </Text>
-            <JFXListView editable="true" layoutX="56.0" layoutY="88.0" prefHeight="256.0" prefWidth="235.0" AnchorPane.bottomAnchor="422.0" AnchorPane.leftAnchor="56.0" AnchorPane.topAnchor="88.0" />
+            <JFXListView fx:id="movieMovieListBox" editable="true" layoutX="56.0" layoutY="88.0" prefHeight="256.0" prefWidth="235.0" AnchorPane.bottomAnchor="422.0" AnchorPane.leftAnchor="56.0" AnchorPane.topAnchor="88.0" />
             <Text fill="WHITE" layoutX="947.0" layoutY="78.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Roles List" AnchorPane.rightAnchor="120.529296875" AnchorPane.topAnchor="56.41796875">
                <font>
                   <Font size="20.0" />
@@ -63,7 +63,7 @@
             <JFXListView editable="true" layoutX="599.0" layoutY="88.0" prefHeight="256.0" prefWidth="235.0" AnchorPane.bottomAnchor="422.0" AnchorPane.rightAnchor="316.0" AnchorPane.topAnchor="88.0" />
             <AnchorPane layoutX="56.0" layoutY="493.0" AnchorPane.bottomAnchor="48.0" AnchorPane.leftAnchor="56.0">
                <children>
-                  <JFXButton layoutX="235.0" layoutY="13.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Add Img" textFill="WHITE">
+                  <JFXButton fx:id="movieImageBtn" layoutX="235.0" layoutY="13.0" onAction="#imageAddAction" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Add Img" textFill="WHITE">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
@@ -73,7 +73,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </JFXButton>
-                  <ImageView fitHeight="225.0" fitWidth="235.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="movieImage" fitHeight="225.0" fitWidth="235.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@images/defaultIcon.png" />
                      </image>
@@ -90,7 +90,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
-            <JFXButton layoutX="1052.0" layoutY="432.0" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Clear" textFill="WHITE" AnchorPane.bottomAnchor="307.0" AnchorPane.rightAnchor="38.0">
+            <JFXButton layoutX="1052.0" layoutY="432.0" onAction="#movieClearAction" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Clear" textFill="WHITE" AnchorPane.bottomAnchor="307.0" AnchorPane.rightAnchor="38.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -100,32 +100,27 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
-            <JFXButton layoutX="963.0" layoutY="390.0" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Mod" textFill="WHITE" AnchorPane.bottomAnchor="349.0" AnchorPane.rightAnchor="129.0">
+            <JFXButton layoutX="963.0" layoutY="390.0" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Update" textFill="WHITE" AnchorPane.bottomAnchor="349.0" AnchorPane.rightAnchor="129.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
-            <JFXButton layoutX="866.0" layoutY="390.0" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Add" textFill="WHITE" AnchorPane.bottomAnchor="349.0" AnchorPane.rightAnchor="224.0">
+            <JFXButton layoutX="866.0" layoutY="390.0" onAction="#addActionMovie" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Add" textFill="WHITE" AnchorPane.bottomAnchor="349.0" AnchorPane.rightAnchor="224.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
-            <JFXTextField focusColor="WHITE" layoutX="781.0" layoutY="557.0" prefHeight="25.0" prefWidth="346.0" styleClass="jfx-text-field" unFocusColor="#ffaf00" AnchorPane.bottomAnchor="184.0" AnchorPane.rightAnchor="23.0">
+            <JFXTextField fx:id="movieDurationTxt" focusColor="WHITE" layoutX="781.0" layoutY="557.0" prefHeight="25.0" prefWidth="346.0" styleClass="jfx-text-field" unFocusColor="#ffaf00" AnchorPane.bottomAnchor="184.0" AnchorPane.rightAnchor="23.0">
                <cursor>
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </JFXTextField>
-            <JFXTextField focusColor="WHITE" layoutX="781.0" layoutY="533.0" prefHeight="25.0" prefWidth="346.0" styleClass="jfx-text-field" unFocusColor="#ffae00" AnchorPane.bottomAnchor="208.0" AnchorPane.rightAnchor="23.0">
+            <JFXTextField fx:id="movieTitleTxt" focusColor="WHITE" layoutX="781.0" layoutY="508.0" prefHeight="25.0" prefWidth="346.0" styleClass="jfx-text-field" unFocusColor="#ffaf00" AnchorPane.bottomAnchor="233.0" AnchorPane.rightAnchor="23.0">
                <cursor>
                   <Cursor fx:constant="TEXT" />
                </cursor>
             </JFXTextField>
-            <JFXTextField focusColor="WHITE" layoutX="781.0" layoutY="508.0" prefHeight="25.0" prefWidth="346.0" styleClass="jfx-text-field" unFocusColor="#ffaf00" AnchorPane.bottomAnchor="233.0" AnchorPane.rightAnchor="23.0">
-               <cursor>
-                  <Cursor fx:constant="TEXT" />
-               </cursor>
-            </JFXTextField>
-            <JFXTextArea focusColor="WHITE" layoutX="781.0" layoutY="583.0" prefHeight="144.0" prefWidth="346.0" styleClass="jfx-text-field" unFocusColor="#ffae00" AnchorPane.bottomAnchor="39.0" AnchorPane.rightAnchor="23.0">
+            <JFXTextArea fx:id="movieDescTxt" focusColor="WHITE" layoutX="781.0" layoutY="583.0" prefHeight="144.0" prefWidth="346.0" styleClass="jfx-text-field" unFocusColor="#ffae00" AnchorPane.bottomAnchor="39.0" AnchorPane.rightAnchor="23.0">
                <cursor>
                   <Cursor fx:constant="TEXT" />
                </cursor>
@@ -166,6 +161,21 @@
                   </Text>
                </graphic>
             </Label>
+            <JFXTextField fx:id="movieEsTitleTxt" focusColor="WHITE" layoutX="781.0" layoutY="481.0" prefHeight="25.0" prefWidth="346.0" styleClass="jfx-text-field" unFocusColor="#ffaf00" AnchorPane.bottomAnchor="260.0" AnchorPane.rightAnchor="23.0">
+               <cursor>
+                  <Cursor fx:constant="TEXT" />
+               </cursor>
+            </JFXTextField>
+            <Label alignment="CENTER" layoutX="664.0" layoutY="480.0" prefHeight="27.0" prefWidth="55.0" AnchorPane.bottomAnchor="259.0" AnchorPane.rightAnchor="431.0">
+               <graphic>
+                  <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="Es Title">
+                     <font>
+                        <Font size="15.0" />
+                     </font>
+                  </Text>
+               </graphic>
+            </Label>
+            <JFXDatePicker fx:id="movieReleaseTxt" defaultColor="#ffae00" layoutX="781.0" layoutY="534.0" prefHeight="25.0" prefWidth="354.0" AnchorPane.bottomAnchor="209.0" AnchorPane.rightAnchor="15.0" />
          </children>
       </AnchorPane>
       <AnchorPane fx:id="genrePane" layoutX="64.0" prefHeight="766.0" prefWidth="1150.0" style="-fx-background-color: #1C191F;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -222,7 +232,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
-            <JFXButton layoutX="963.0" layoutY="390.0" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Mod" textFill="WHITE" AnchorPane.bottomAnchor="349.0" AnchorPane.rightAnchor="129.0">
+            <JFXButton layoutX="963.0" layoutY="390.0" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Update" textFill="WHITE" AnchorPane.bottomAnchor="349.0" AnchorPane.rightAnchor="129.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -255,7 +265,7 @@
                   <Font size="34.0" />
                </font>
             </Label>
-            <JFXListView fx:id="actorActorListBox" editable="true" layoutX="56.0" layoutY="85.0" prefHeight="256.0" prefWidth="235.0" AnchorPane.leftAnchor="56.0" AnchorPane.topAnchor="85.0" />
+            <JFXListView fx:id="actorActorListBox" editable="true" layoutX="56.0" layoutY="85.0" onMouseClicked="#actorActorActionEvent" prefHeight="256.0" prefWidth="235.0" AnchorPane.leftAnchor="56.0" AnchorPane.topAnchor="85.0" />
             <Text fill="WHITE" layoutX="121.0" layoutY="79.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Person List" AnchorPane.topAnchor="56.41796875">
                <font>
                   <Font size="20.0" />
@@ -277,7 +287,7 @@
                   <Font size="20.0" />
                </font>
             </Text>
-            <JFXButton layoutX="291.0" layoutY="674.0" onAction="#imageAddAction" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Add Img" textFill="WHITE" AnchorPane.bottomAnchor="233.0" AnchorPane.leftAnchor="291.0">
+            <JFXButton fx:id="actorImageBtn" layoutX="291.0" layoutY="674.0" onAction="#imageAddAction" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Add Img" textFill="WHITE" AnchorPane.bottomAnchor="233.0" AnchorPane.leftAnchor="291.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -292,7 +302,7 @@
                   <Image url="@images/defaultIcon.png" />
                </image>
             </ImageView>
-            <JFXButton layoutX="866.0" layoutY="432.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Del pers" textFill="WHITE" AnchorPane.bottomAnchor="307.0" AnchorPane.rightAnchor="224.0">
+            <JFXButton fx:id="delPersonButton" disable="true" layoutX="866.0" layoutY="432.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Del pers" textFill="WHITE" AnchorPane.bottomAnchor="307.0" AnchorPane.rightAnchor="224.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -302,7 +312,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
-            <JFXButton layoutX="1052.0" layoutY="432.0" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Clear" textFill="WHITE" AnchorPane.bottomAnchor="307.0" AnchorPane.rightAnchor="38.0">
+            <JFXButton layoutX="1052.0" layoutY="432.0" onAction="#actorClearAction" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Clear" textFill="WHITE" AnchorPane.bottomAnchor="307.0" AnchorPane.rightAnchor="38.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -312,7 +322,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
-            <JFXButton layoutX="963.0" layoutY="390.0" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Mod" textFill="WHITE" AnchorPane.bottomAnchor="349.0" AnchorPane.rightAnchor="129.0">
+            <JFXButton fx:id="updatePersonBtn" layoutX="963.0" layoutY="390.0" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Update" textFill="WHITE" AnchorPane.bottomAnchor="349.0" AnchorPane.rightAnchor="129.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -468,7 +478,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
-            <JFXButton layoutX="963.0" layoutY="390.0" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Mod" textFill="WHITE" AnchorPane.bottomAnchor="349.0" AnchorPane.rightAnchor="129.0">
+            <JFXButton layoutX="963.0" layoutY="390.0" prefHeight="27.0" prefWidth="60.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Update" textFill="WHITE" AnchorPane.bottomAnchor="349.0" AnchorPane.rightAnchor="129.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
