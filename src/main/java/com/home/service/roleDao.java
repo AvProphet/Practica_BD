@@ -1,6 +1,6 @@
 package com.home.service;
 
-import com.home.entity.Role;
+import com.home.entity.Roles;
 import com.home.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,16 +15,16 @@ public class roleDao {
     @Autowired
     private RoleRepository roleRepository;
 
-    public static List<Role> roles = new ArrayList<>();
+    public static List<Roles> roles = new ArrayList<>();
 
     private static int userCount = 3;
 
     static {
-        roles.add(new Role(1L, "Main Role"));
+        roles.add(new Roles(1L, "Main Role"));
 
-        roles.add(new Role(2L, "Secondary Role"));
+        roles.add(new Roles(2L, "Secondary Role"));
 
-        roles.add(new Role(3L, "Role"));
+        roles.add(new Roles(3L, "Role"));
     }
 
     @PostConstruct

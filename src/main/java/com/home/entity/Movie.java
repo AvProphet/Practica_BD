@@ -1,11 +1,9 @@
 package com.home.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import java.io.File;
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "movie")
@@ -13,12 +11,94 @@ public class Movie {
 
     @Id
     @GeneratedValue
-    private Long idMovie;
+    private Long id_movie;
+
+    @OneToMany(mappedBy = "movie")
+    List<Participate> participates;
+
+    @OneToMany(mappedBy = "movie")
+    List<MovieGen> movieGens;
 
     private String title;
-    private String esTitle;
-    private Date releaseDate;
+    private String es_title;
+    private String release_date;
     private String duration;
     private String synopsis;
-    private File moviePoster;
+    private File movie_poster;
+
+    public Movie() {
+        participates = new ArrayList<>();
+        movieGens = new ArrayList<>();
+    }
+
+    public Movie(Long idMovie, String title, String esTitle, String releaseDate, String duration, String synopsis, File moviePoster) {
+        this.id_movie = idMovie;
+        this.title = title;
+        this.es_title = esTitle;
+        this.release_date = releaseDate;
+        this.duration = duration;
+        this.synopsis = synopsis;
+        this.movie_poster = moviePoster;
+    }
+
+    public Long getId_movie() {
+        return id_movie;
+    }
+
+    public void setId_movie(Long idMovie) {
+        this.id_movie = idMovie;
+    }
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public String getEs_title() {
+        return es_title;
+    }
+
+    public void setEs_title(String esTitle) {
+        this.es_title = esTitle;
+    }
+
+    public String getRelease_date() {
+        return release_date;
+    }
+
+    public void setRelease_date(String releaseDate) {
+        this.release_date = releaseDate;
+    }
+
+    public String getDuration() {
+        return duration;
+    }
+
+    public void setDuration(String duration) {
+        this.duration = duration;
+    }
+
+    public String getSynopsis() {
+        return synopsis;
+    }
+
+    public void setSynopsis(String synopsis) {
+        this.synopsis = synopsis;
+    }
+
+    public File getMovie_poster() {
+        return movie_poster;
+    }
+
+    public void setMovie_poster(File moviePoster) {
+        this.movie_poster = moviePoster;
+    }
+
+    @Override
+    public String toString() {
+        return title;
+    }
 }

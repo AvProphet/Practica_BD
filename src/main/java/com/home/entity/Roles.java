@@ -1,27 +1,29 @@
 package com.home.entity;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "roles")
-public class Role {
+public class Roles {
 
     @Id
     @GeneratedValue
     private Long id_role;
 
+    @OneToMany(mappedBy = "roles")
+    List<Participate> participates;
+
     private String desc_role;
 
-    public Role(Long id_role, String desc_role) {
+    public Roles(Long id_role, String desc_role) {
         this.id_role = id_role;
         this.desc_role = desc_role;
     }
 
-    public Role() {
-
+    public Roles() {
+        participates = new ArrayList<>();
     }
 
     public Long getId_role() {
