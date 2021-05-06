@@ -26,8 +26,11 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
 import java.util.ResourceBundle;
 
@@ -79,8 +82,8 @@ public class Controller implements Initializable {
     @FXML
     private JFXListView<Person> actorActorListBox;
 
-    @FXML
-    private void addActionActor(ActionEvent event) {
+    @FXML // * Set person method
+    private void addActionActor(ActionEvent event) throws IOException {
         Person person = new Person();
 
         setPersonFields(person);
@@ -90,9 +93,10 @@ public class Controller implements Initializable {
         log.info("Person with name " + person.getName() + " was successfully added");
     }
 
-    @FXML
-    private void actorActorActionEvent(MouseEvent event) throws IOException {
+    @FXML // * Update and delete actions on person
+    private void actorActorActionEvent(MouseEvent event) {
         delPersonButton.setDisable(false);
+        updatePersonBtn.setDisable(false);
 
         Person person = actorActorListBox.getSelectionModel().getSelectedItem();
 
@@ -102,6 +106,7 @@ public class Controller implements Initializable {
         birthDateTxt.setValue(person.getBirth_date());
         cityBirthTxt.setText(person.getCity_birth());
         countryBirthTxt.setText(person.getCountry_birth());
+        actorImage.setImage(new Image("/images/" + person.getPhoto_person()));
 
 
         delPersonButton.setOnMouseClicked(deleteEvent -> {
@@ -115,7 +120,11 @@ public class Controller implements Initializable {
         updatePersonBtn.setOnMouseClicked(updateEvent -> {
             if (personRepository.existsById(person.getId_person())) {
 
-                setPersonFields(person);
+                try {
+                    setPersonFields(person);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
                 personRepository.save(person);
                 actorActorListBox.setItems(FXCollections.observableArrayList(personRepository.findAll()));
@@ -123,16 +132,6 @@ public class Controller implements Initializable {
             }
         });
 
-    }
-
-    private void setPersonFields(Person person) {
-        person.setName(personNameTxt.getText());
-        person.setSecond_name(secondNameTxt.getText());
-        person.setNationality(nationalityTxt.getText());
-        person.setBirth_date(birthDateTxt.getValue());
-        person.setCity_birth(cityBirthTxt.getText());
-        person.setCountry_birth(countryBirthTxt.getText());
-        person.setPhoto_person(new File(actorImage.toString()));
     }
 
     @FXML
@@ -147,10 +146,23 @@ public class Controller implements Initializable {
         actorImage.setImage(new Image("/images/defaultIcon.png"));
     }
 
+    private void setPersonFields(Person person) throws IOException {
+
+        person.setName(personNameTxt.getText());
+        person.setSecond_name(secondNameTxt.getText());
+        person.setNationality(nationalityTxt.getText());
+        person.setBirth_date(birthDateTxt.getValue());
+        person.setCity_birth(cityBirthTxt.getText());
+        person.setCountry_birth(countryBirthTxt.getText());
+
+        String fileName = fileUriExtraction(actorImage);
+
+        person.setPhoto_person(fileName);
+    }
 //    @FXML
 //    private void
 
-    // + Movie management Bloc, and we continue with this badly made structure, but now i have no choice but making comments to separate all this code
+    // + Movie management Bloc, and we continue with this badly made structure, now i have no choice but making comments to separate all this code
 
     @FXML
     private JFXTextField movieEsTitleTxt, movieTitleTxt, movieDurationTxt;
@@ -162,7 +174,7 @@ public class Controller implements Initializable {
     private JFXTextArea movieDescTxt;
 
     @FXML
-    private JFXButton movieImageBtn;
+    private JFXButton movieImageBtn, delMovieButton, updateMovieBtn;
 
     @FXML
     private ImageView movieImage;
@@ -171,18 +183,53 @@ public class Controller implements Initializable {
     private JFXListView<Movie> movieMovieListBox;
 
     @FXML
-    private void addActionMovie(ActionEvent event) {
+    private void addActionMovie(ActionEvent event) throws IOException {
         Movie movie = new Movie();
 
-        movie.setTitle(movieTitleTxt.getText());
-        movie.setEs_title(movieEsTitleTxt.getText());
-        movie.setRelease_date(movieReleaseTxt.getValue());
-        movie.setDuration(movieDurationTxt.getText());
-        movie.setSynopsis(movieDescTxt.getText());
+        setMovieFields(movie);
 
         movieRepository.save(movie);
         movieMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
         log.info("Movie with title " + movie.getTitle() + " was successfully added");
+    }
+
+    @FXML
+    private void movieMovieActionEvent(MouseEvent event) {
+        delMovieButton.setDisable(false);
+        updateMovieBtn.setDisable(false);
+
+        Movie movie = movieMovieListBox.getSelectionModel().getSelectedItem();
+
+        movieTitleTxt.setText(movie.getTitle());
+        movieEsTitleTxt.setText(movie.getEs_title());
+        movieReleaseTxt.setValue(movie.getRelease_date());
+        movieDurationTxt.setText(movie.getDuration());
+        movieDescTxt.setText(movie.getSynopsis());
+
+        movieImage.setImage(new Image("/images/" + movie.getMovie_poster()));
+
+        delMovieButton.setOnMouseClicked(deleteEvent -> {
+            if (movieRepository.existsById(movie.getId_movie())) {
+                movieRepository.deleteById(movie.getId_movie());
+                movieMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
+                log.info("Movie with ID " + movie.getId_movie() + " and title " + movie.getTitle() + " was successfully deleted");
+            }
+        });
+
+        updateMovieBtn.setOnMouseClicked(updateEvent -> {
+            if (movieRepository.existsById(movie.getId_movie())) {
+
+                try {
+                    setMovieFields(movie);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                movieRepository.save(movie);
+                movieMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
+                log.info("Movie with ID " + movie.getId_movie() + " and title " + movie.getTitle() + " was successfully updated");
+            }
+        });
     }
 
     @FXML
@@ -195,6 +242,19 @@ public class Controller implements Initializable {
 
         movieImage.setImage(new Image("/images/defaultIcon.png"));
     }
+
+    private void setMovieFields(Movie movie) throws IOException {
+        movie.setTitle(movieTitleTxt.getText());
+        movie.setEs_title(movieEsTitleTxt.getText());
+        movie.setRelease_date(movieReleaseTxt.getValue());
+        movie.setDuration(movieDurationTxt.getText());
+        movie.setSynopsis(movieDescTxt.getText());
+
+        String fileName = fileUriExtraction(movieImage);
+
+        movie.setMovie_poster(fileName);
+    }
+
 
     // + Role management block
 
@@ -276,8 +336,10 @@ public class Controller implements Initializable {
     }
 
     @FXML
-    private void imageAddAction(ActionEvent event) {
+    private void imageAddAction(ActionEvent event) throws URISyntaxException {
+        FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.jpeg");
         FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(imageFilter);
         fileChooser.setTitle("Open Resource File");
         Stage stage = new Stage();
         File file = fileChooser.showOpenDialog(stage);
@@ -297,6 +359,18 @@ public class Controller implements Initializable {
                 System.err.println("The URI is null - Select image");
             }
         }
+    }
+
+    private String fileUriExtraction(ImageView movieImage) throws IOException {
+        String fileName = movieImage.getImage().getUrl();
+        fileName = fileName.substring(fileName.lastIndexOf("/") + 1);
+
+        String fileURL = movieImage.getImage().getUrl();
+        fileURL = fileURL.substring(fileURL.lastIndexOf(":") + 1);
+
+        Files.copy(Paths.get(fileURL), Paths.get("src/main/resources/images/" + fileName), StandardCopyOption.REPLACE_EXISTING);
+        Files.copy(Paths.get(fileURL), Paths.get("target/classes/images/" + fileName), StandardCopyOption.REPLACE_EXISTING);
+        return fileName;
     }
 
     // + - very strange realization of slider, and other functionality, like taking info from DB to listBox

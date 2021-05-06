@@ -23,13 +23,13 @@ public class Person {
     private LocalDate birth_date;
     private String city_birth;
     private String country_birth;
-    private File photo_person;
+    private String photo_person;
 
     public Person() {
         participates = new ArrayList<>();
     }
 
-    public Person(Long idPerson, String name, String secondName, String nationality, LocalDate birthDate, String cityBirth, String countryBirth, File photoPerson) {
+    public Person(Long idPerson, String name, String secondName, String nationality, LocalDate birthDate, String cityBirth, String countryBirth, String photoPerson) {
         this.id_person = idPerson;
         this.name = name;
         this.second_name = secondName;
@@ -96,11 +96,11 @@ public class Person {
         this.country_birth = countryBirth;
     }
 
-    public File getPhoto_person() {
+    public String getPhoto_person() {
         return photo_person;
     }
 
-    public void setPhoto_person(File photoPerson) {
+    public void setPhoto_person(String photoPerson) {
         this.photo_person = photoPerson;
     }
 
