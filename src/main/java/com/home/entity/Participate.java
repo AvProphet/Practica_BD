@@ -35,6 +35,10 @@ public class Participate {
 
     }
 
+    public Participate(ParticipateKey participateKey) {
+        this.id = participateKey;
+    }
+
     public ParticipateKey getId() {
         return id;
     }

@@ -1,12 +1,7 @@
 package com.home;
 
-import com.home.entity.Movie;
-import com.home.entity.Person;
-import com.home.entity.Roles;
-import com.home.repository.GenreRepository;
-import com.home.repository.MovieRepository;
-import com.home.repository.PersonRepository;
-import com.home.repository.RoleRepository;
+import com.home.entity.*;
+import com.home.repository.*;
 import com.jfoenix.controls.*;
 import javafx.animation.TranslateTransition;
 import javafx.collections.FXCollections;
@@ -26,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -37,6 +31,14 @@ import java.util.ResourceBundle;
 @Slf4j
 @Component
 public class Controller implements Initializable {
+
+    private Person person = new Person();
+
+    private Movie movie = new Movie();
+
+    private Roles roles = new Roles();
+
+    private Genre genre = new Genre();
 
     @Autowired
     private RoleRepository roleRepository;
@@ -50,6 +52,9 @@ public class Controller implements Initializable {
     @Autowired
     private MovieRepository movieRepository;
 
+    @Autowired
+    private ParticipateRepository participateRepository;
+
 
     @FXML // + Menu Block
     private JFXButton mngMovies, mngGenres, mngActors, mngRoles, homeButton, exit, closeMenu, openMenu, helpMenu;
@@ -61,10 +66,10 @@ public class Controller implements Initializable {
     private AnchorPane moviePane, genrePane, actorPane, rolePane, homePane;
 
     @FXML // + Additional Relationship modify block
-    private AnchorPane modRelPane;
+    private AnchorPane modActorRelPane;
 
     @FXML // + goTo or BackFrom add. rel. block
-    private JFXButton backFromModRel;
+    private JFXButton backFromActorModRel;
 
     // + - Actor Management Block, i have no idea why i didnt make it in different fxml files, too bad.
     @FXML
@@ -74,7 +79,7 @@ public class Controller implements Initializable {
     private JFXDatePicker birthDateTxt;
 
     @FXML
-    private JFXButton actorImageBtn, delPersonButton, updatePersonBtn;
+    private JFXButton actorImageBtn, delPersonButton, updatePersonBtn, addRelButtonActor, actorModRel;
 
     @FXML
     private ImageView actorImage;
@@ -97,8 +102,10 @@ public class Controller implements Initializable {
     private void actorActorActionEvent(MouseEvent event) {
         delPersonButton.setDisable(false);
         updatePersonBtn.setDisable(false);
+        actorModRel.setDisable(false);
 
-        Person person = actorActorListBox.getSelectionModel().getSelectedItem();
+        person = actorActorListBox.getSelectionModel().getSelectedItem();
+        log.info("yo have selected person with ID - " + person.getId_person());
 
         personNameTxt.setText(person.getName());
         secondNameTxt.setText(person.getSecond_name());
@@ -106,8 +113,8 @@ public class Controller implements Initializable {
         birthDateTxt.setValue(person.getBirth_date());
         cityBirthTxt.setText(person.getCity_birth());
         countryBirthTxt.setText(person.getCountry_birth());
-        actorImage.setImage(new Image("/images/" + person.getPhoto_person()));
 
+        actorImage.setImage(new Image("/images/" + person.getPhoto_person()));
 
         delPersonButton.setOnMouseClicked(deleteEvent -> {
             if (personRepository.existsById(person.getId_person())) {
@@ -132,6 +139,20 @@ public class Controller implements Initializable {
             }
         });
 
+    }
+
+
+    @FXML
+    private void movieActorModRelListAction(MouseEvent event) {
+
+        movie = movieActorModRelList.getSelectionModel().getSelectedItem();
+        log.info("yo have selected movie with ID - " + movie.getId_movie());
+    }
+
+    @FXML
+    private void roleActorModRelListAction(MouseEvent event) {
+        roles = roleActorModRelList.getSelectionModel().getSelectedItem();
+        log.info("yo have selected role with ID - " + roles.getId_role());
     }
 
     @FXML
@@ -255,11 +276,128 @@ public class Controller implements Initializable {
         movie.setMovie_poster(fileName);
     }
 
-
-    // + Role management block
+    // + Role management block ------------------
 
     @FXML
     private JFXListView<Roles> roleRoleListBox;
+
+    @FXML
+    private JFXButton updateRoleButton, deleteRoleButton;
+
+    @FXML
+    private JFXTextArea roleDescTxt;
+
+    @FXML
+    private void roleAddAction(ActionEvent event) {
+        Roles role = new Roles();
+
+        role.setDesc_role(roleDescTxt.getText());
+
+        roleRepository.save(role);
+        roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
+        log.info("Genre with description " + role.getDesc_role() + " was successfully added");
+    }
+
+    @FXML
+    private void roleRoleActionEvent(MouseEvent event) {
+        deleteRoleButton.setDisable(false);
+        updateRoleButton.setDisable(false);
+
+        Roles roles = roleRoleListBox.getSelectionModel().getSelectedItem();
+
+        roleDescTxt.setText(roles.getDesc_role());
+
+        deleteRoleButton.setOnMouseClicked(deleteButton -> {
+            if (roleRepository.existsById(roles.getId_role())) {
+                roleRepository.deleteById(roles.getId_role());
+                roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
+                log.info("Role with ID " + roles.getId_role() + " and description " + roles.getDesc_role() + " was successfully deleted");
+            }
+        });
+
+        updateRoleButton.setOnMouseClicked(updateButton -> {
+            if (roleRepository.existsById(roles.getId_role())) {
+
+                roles.setDesc_role(roleDescTxt.getText());
+
+                roleRepository.save(roles);
+                roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
+                log.info("Genre with description " + roles.getDesc_role() + " was successfully added");
+            }
+        });
+    }
+
+    @FXML
+    private void clearRoleAction(ActionEvent event) {
+        roleDescTxt.clear();
+    }
+
+    // + Genre management block -----------------
+
+    @FXML
+    private JFXButton updateGenreButton, delGenreButton;
+
+    @FXML
+    private JFXListView<Genre> genreGenreListBox;
+
+    @FXML
+    private JFXTextArea genreDescTxt;
+
+    @FXML
+    private void genreAddAction(ActionEvent event) {
+        Genre genre = new Genre();
+
+        genre.setDesc_genre(genreDescTxt.getText());
+
+        genreRepository.save(genre);
+        genreGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
+        log.info("Genre with description " + genre.getDesc_genre() + " was successfully added");
+    }
+
+    @FXML
+    private void genreGenreActionEvent(MouseEvent event) {
+        delGenreButton.setDisable(false);
+        updateGenreButton.setDisable(false);
+
+        Genre genre = genreGenreListBox.getSelectionModel().getSelectedItem();
+
+        genreDescTxt.setText(genre.getDesc_genre());
+
+        delGenreButton.setOnMouseClicked(deleteButton -> {
+            if (genreRepository.existsById(genre.getId_genre())) {
+                genreRepository.deleteById(genre.getId_genre());
+                genreGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
+                log.info("Genre with ID " + genre.getId_genre() + " and description " + genre.getDesc_genre() + " was successfully deleted");
+            }
+        });
+
+        updateGenreButton.setOnMouseClicked(updateButton -> {
+            if (genreRepository.existsById(genre.getId_genre())) {
+
+                genre.setDesc_genre(genreDescTxt.getText());
+
+                genreRepository.save(genre);
+                genreGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
+                log.info("Genre with description " + genre.getDesc_genre() + " was successfully added");
+            }
+        });
+    }
+
+    @FXML
+    private void genreClearAction(ActionEvent event) {
+        genreDescTxt.clear();
+    }
+
+    // + Mod rel Block --------------------------
+
+    @FXML
+    private JFXListView<Movie> movieActorModRelList;
+
+    @FXML
+    private JFXListView<Roles> roleActorModRelList;
+
+    @FXML
+    private JFXListView<Movie> movieActorParticipationList;
 
     // + there i have button events handlers, at this moment i wasnt able to implement this better, but i dont like it.
 
@@ -329,14 +467,27 @@ public class Controller implements Initializable {
 
     @FXML
     private void handleButtonActionModRel(ActionEvent event) {
-        modRelPane.setVisible(true);
-        if (event.getSource() == backFromModRel) {
-            modRelPane.setVisible(false);
+
+        movieActorParticipationList.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
+
+        if (event.getSource() == actorModRel) {
+            modActorRelPane.setVisible(true);
         }
+        if (event.getSource() == backFromActorModRel) {
+            modActorRelPane.setVisible(false);
+        }
+
+        addRelButtonActor.setOnMouseClicked(addRelButtonActorEvent -> {
+            participateRepository.save(new Participate(new ParticipateKey(person.getId_person(), movie.getId_movie(), roles.getId_role()), movie, person,
+                    roles));
+            log.info("Person with ID " + person.getId_person() + " and name " + person.getName() + " now participate in movie " +
+                    movie.getTitle() + " with role " + roles.getDesc_role());
+                movieActorParticipationList.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
+        });
     }
 
     @FXML
-    private void imageAddAction(ActionEvent event) throws URISyntaxException {
+    private void imageAddAction(ActionEvent event) {
         FileChooser.ExtensionFilter imageFilter = new FileChooser.ExtensionFilter("Image Files", "*.jpg", "*.png", "*.jpeg");
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(imageFilter);
@@ -386,6 +537,12 @@ public class Controller implements Initializable {
         roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
 
         movieMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
+
+        genreGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
+
+        movieActorModRelList.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
+
+        roleActorModRelList.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
 
         exit.setOnMouseClicked(event -> System.exit(0));
 

@@ -27,9 +27,9 @@ public class roleDao {
         roles.add(new Roles(3L, "Role"));
     }
 
-    @PostConstruct
-    public void Initilalize() {
-        System.out.println("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
-        roleRepository.saveAll(roles);
-    }
+//    @PostConstruct
+//    public void Initilalize() {
+//        System.out.println("SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS");
+//        roleRepository.saveAll(roles);
+//    }
 }
