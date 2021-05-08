@@ -13,10 +13,10 @@ public class Movie {
     @GeneratedValue
     private Long id_movie;
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.REMOVE)
     List<Participate> participates;
 
-    @OneToMany(mappedBy = "movie")
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.REMOVE)
     List<MovieGen> movieGens;
 
     private String title;

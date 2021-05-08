@@ -12,7 +12,7 @@ public class Genre {
     @GeneratedValue
     private Long id_genre;
 
-    @OneToMany(mappedBy = "genre")
+    @OneToMany(mappedBy = "genre", cascade = CascadeType.REMOVE)
     List<MovieGen> movieGens;
 
     private String desc_genre;

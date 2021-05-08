@@ -1,7 +1,6 @@
 package com.home.entity;
 
 import javax.persistence.*;
-import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +13,7 @@ public class Person {
     @GeneratedValue
     private Long id_person;
 
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = "person", cascade = CascadeType.REMOVE)
     List<Participate> participates;
 
     private String name;

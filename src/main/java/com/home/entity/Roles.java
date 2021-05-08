@@ -12,7 +12,7 @@ public class Roles {
     @GeneratedValue
     private Long id_role;
 
-    @OneToMany(mappedBy = "roles")
+    @OneToMany(mappedBy = "roles", cascade = CascadeType.REMOVE)
     List<Participate> participates;
 
     private String desc_role;
