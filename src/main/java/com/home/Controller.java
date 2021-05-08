@@ -8,6 +8,8 @@ import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -25,6 +27,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Slf4j
@@ -49,12 +53,15 @@ public class Controller implements Initializable {
 
     private final ParticipateRepository participateRepository;
 
-    public Controller(RoleRepository roleRepository, PersonRepository personRepository, GenreRepository genreRepository, MovieRepository movieRepository, ParticipateRepository participateRepository) {
+    private final MovieGenRepository movieGenRepository;
+
+    public Controller(RoleRepository roleRepository, PersonRepository personRepository, GenreRepository genreRepository, MovieRepository movieRepository, ParticipateRepository participateRepository, MovieGenRepository movieGenRepository) {
         this.roleRepository = roleRepository;
         this.personRepository = personRepository;
         this.genreRepository = genreRepository;
         this.movieRepository = movieRepository;
         this.participateRepository = participateRepository;
+        this.movieGenRepository = movieGenRepository;
     }
 
     @FXML // + Menu Block
@@ -67,10 +74,10 @@ public class Controller implements Initializable {
     private AnchorPane moviePane, genrePane, actorPane, rolePane, homePane;
 
     @FXML // + Additional Relationship modify block
-    private AnchorPane modActorRelPane;
+    private AnchorPane modActorRelPane, modMovieRelPane;
 
     @FXML // + goTo or BackFrom add. rel. block
-    private JFXButton backFromActorModRel;
+    private JFXButton backFromActorModRel, backFromMovieModRel;
 
     // + - Actor Management Block, i have no idea why i didnt make it in different fxml files, too bad.
     @FXML
@@ -94,7 +101,7 @@ public class Controller implements Initializable {
     @FXML
     private JFXListView<Roles> actorRolesListBox;
 
-    // * Set person method --------------------------------------------------------------------
+    // + Set person method --------------------------------------------------------------------
     @FXML
     private void addActionActor(ActionEvent event) throws IOException {
         Person person = new Person();
@@ -103,19 +110,27 @@ public class Controller implements Initializable {
 
         personRepository.save(person);
         actorActorListBox.setItems(FXCollections.observableArrayList(personRepository.findAll()));
+
+        delPersonButton.setDisable(true);
+        updatePersonBtn.setDisable(true);
+        actorModRel.setDisable(true);
+
         log.info("Person with name " + person.getName() + " was successfully added");
     }
 
-    // * Update and delete actions on person --------------------------------------------------
+    // + Update and delete actions on person --------------------------------------------------
     @FXML
     private void actorActorActionEvent(MouseEvent event) {
+
         delPersonButton.setDisable(false);
         updatePersonBtn.setDisable(false);
         actorModRel.setDisable(false);
 
         person = actorActorListBox.getSelectionModel().getSelectedItem();
+
         actorMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
         actorRolesListBox.getItems().clear();
+
         log.info("yo have selected person with ID - " + person.getId_person());
 
         personNameTxt.setText(person.getName());
@@ -128,9 +143,16 @@ public class Controller implements Initializable {
         actorImage.setImage(new Image("/images/" + person.getPhoto_person()));
 
         delPersonButton.setOnMouseClicked(deleteEvent -> {
+
             if (personRepository.existsById(person.getId_person())) {
+
                 personRepository.deleteById(person.getId_person());
                 actorActorListBox.setItems(FXCollections.observableArrayList(personRepository.findAll()));
+
+                delPersonButton.setDisable(true);
+                updatePersonBtn.setDisable(true);
+                actorModRel.setDisable(true);
+
                 log.info("Person with ID " + person.getId_person() + " and name " + person.getName() + " was successfully deleted");
             }
         });
@@ -146,18 +168,27 @@ public class Controller implements Initializable {
 
                 personRepository.save(person);
                 actorActorListBox.setItems(FXCollections.observableArrayList(personRepository.findAll()));
+
+                delPersonButton.setDisable(true);
+                updatePersonBtn.setDisable(true);
+                actorModRel.setDisable(true);
+
                 log.info("Person with ID " + person.getId_person() + " and name " + person.getName() + " was successfully updated");
             }
         });
     }
 
+    // + Finding persons with the roles in the selected movie
     @FXML
     private void actorMovieActionEvent(MouseEvent event) {
+
         movie = actorMovieListBox.getSelectionModel().getSelectedItem();
         actorRolesListBox.setItems(FXCollections.observableArrayList(roleRepository.findRolesByMovie(movie.getId_movie(), person.getId_person())));
         log.info("You have selected movie with ID " + movie.getId_movie());
+
     }
 
+    // + Clearing all the fields in actorPane
     @FXML
     private void actorClearAction(ActionEvent event) {
         personNameTxt.clear();
@@ -196,7 +227,7 @@ public class Controller implements Initializable {
     private JFXTextArea movieDescTxt;
 
     @FXML
-    private JFXButton movieImageBtn, delMovieButton, updateMovieBtn;
+    private JFXButton movieImageBtn, delMovieButton, updateMovieBtn, movieModRel;
 
     @FXML
     private ImageView movieImage;
@@ -205,6 +236,16 @@ public class Controller implements Initializable {
     private JFXListView<Movie> movieMovieListBox;
 
     @FXML
+    private JFXListView<Genre> movieGenreListBox;
+
+    @FXML
+    private JFXListView<Person> moviePersonListBox;
+
+    @FXML
+    private JFXListView<Roles> movieRolesListBox;
+
+    // + adding new movie -----------------------------------------------------------------------
+    @FXML
     private void addActionMovie(ActionEvent event) throws IOException {
         Movie movie = new Movie();
 
@@ -212,15 +253,30 @@ public class Controller implements Initializable {
 
         movieRepository.save(movie);
         movieMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
+        movieRolesListBox.getItems().clear();
+        moviePersonListBox.getItems().clear();
+        movieGenreListBox.getItems().clear();
+
+        delMovieButton.setDisable(true);
+        updateMovieBtn.setDisable(true);
+        movieModRel.setDisable(true);
+
         log.info("Movie with title " + movie.getTitle() + " was successfully added");
     }
+
+    // + method for some actions you can make with movie, deleting, updating, selection of object, searching for the related things
 
     @FXML
     private void movieMovieActionEvent(MouseEvent event) {
         delMovieButton.setDisable(false);
         updateMovieBtn.setDisable(false);
+        movieModRel.setDisable(false);
 
-        Movie movie = movieMovieListBox.getSelectionModel().getSelectedItem();
+        movie = movieMovieListBox.getSelectionModel().getSelectedItem();
+
+        movieGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findGenreByMovie(movie.getId_movie())));
+        moviePersonListBox.setItems(FXCollections.observableArrayList(personRepository.findPersonByMovie(movie.getId_movie())));
+        movieRolesListBox.getItems().clear();
 
         movieTitleTxt.setText(movie.getTitle());
         movieEsTitleTxt.setText(movie.getEs_title());
@@ -230,14 +286,25 @@ public class Controller implements Initializable {
 
         movieImage.setImage(new Image("/images/" + movie.getMovie_poster()));
 
+        // + deleting selected movie
         delMovieButton.setOnMouseClicked(deleteEvent -> {
             if (movieRepository.existsById(movie.getId_movie())) {
+
                 movieRepository.deleteById(movie.getId_movie());
                 movieMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
+                movieRolesListBox.getItems().clear();
+                moviePersonListBox.getItems().clear();
+                movieGenreListBox.getItems().clear();
+
                 log.info("Movie with ID " + movie.getId_movie() + " and title " + movie.getTitle() + " was successfully deleted");
+
+                delMovieButton.setDisable(true);
+                updateMovieBtn.setDisable(true);
+                movieModRel.setDisable(true);
             }
         });
 
+        // + updating selected movie
         updateMovieBtn.setOnMouseClicked(updateEvent -> {
             if (movieRepository.existsById(movie.getId_movie())) {
 
@@ -249,10 +316,24 @@ public class Controller implements Initializable {
 
                 movieRepository.save(movie);
                 movieMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
-                actorMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
+
                 log.info("Movie with ID " + movie.getId_movie() + " and title " + movie.getTitle() + " was successfully updated");
+
+                delMovieButton.setDisable(true);
+                updateMovieBtn.setDisable(true);
+                movieModRel.setDisable(true);
             }
         });
+    }
+
+    // + - setting for the roles of person in the selected movie
+    @FXML
+    private void movieActorActionEvent(MouseEvent event) {
+
+        person = moviePersonListBox.getSelectionModel().getSelectedItem();
+        movieRolesListBox.setItems(FXCollections.observableArrayList(roleRepository.findRolesByMovie(movie.getId_movie(), person.getId_person())));
+        log.info("You have selected person with ID " + person.getId_person());
+
     }
 
     @FXML
@@ -284,11 +365,18 @@ public class Controller implements Initializable {
     private JFXListView<Roles> roleRoleListBox;
 
     @FXML
-    private JFXButton updateRoleButton, deleteRoleButton;
+    private JFXListView<Movie> roleMovieListBox;
+
+    @FXML
+    private JFXListView<Person> roleActorListBox;
+
+    @FXML
+    private JFXButton updateRoleButton, deleteRoleButton, roleModButton;
 
     @FXML
     private JFXTextArea roleDescTxt;
 
+    // + adding new role to DB
     @FXML
     private void roleAddAction(ActionEvent event) {
         Roles role = new Roles();
@@ -297,13 +385,20 @@ public class Controller implements Initializable {
 
         roleRepository.save(role);
         roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
+
+        deleteRoleButton.setDisable(true);
+        updateRoleButton.setDisable(true);
+        roleModButton.setDisable(true);
+
         log.info("Genre with description " + role.getDesc_role() + " was successfully added");
     }
 
+    // + same method as for person and movie --------------------------------------------------------------------
     @FXML
     private void roleRoleActionEvent(MouseEvent event) {
         deleteRoleButton.setDisable(false);
         updateRoleButton.setDisable(false);
+        roleModButton.setDisable(false);
 
         Roles roles = roleRoleListBox.getSelectionModel().getSelectedItem();
 
@@ -313,6 +408,11 @@ public class Controller implements Initializable {
             if (roleRepository.existsById(roles.getId_role())) {
                 roleRepository.deleteById(roles.getId_role());
                 roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
+
+                deleteRoleButton.setDisable(true);
+                updateRoleButton.setDisable(true);
+                roleModButton.setDisable(true);
+
                 log.info("Role with ID " + roles.getId_role() + " and description " + roles.getDesc_role() + " was successfully deleted");
             }
         });
@@ -324,9 +424,36 @@ public class Controller implements Initializable {
 
                 roleRepository.save(roles);
                 roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
+
+                deleteRoleButton.setDisable(true);
+                updateRoleButton.setDisable(true);
+                roleModButton.setDisable(true);
+
                 log.info("Genre with description " + roles.getDesc_role() + " was successfully added");
             }
         });
+    }
+
+    // + - as we have same functions in another method, i'd made to user go to Person page to made modification instead of making same thing for this window
+    @FXML
+    private void goToPerson(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Modification info");
+        alert.setHeaderText("For modification, you'd better to go to Person page");
+        alert.setContentText("Are you ok with this?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            rolePane.setVisible(false);
+            actorPane.setVisible(true);
+            for (int i = 0; i < actorActorListBox.getItems().size(); i++) {
+                if (actorActorListBox.getSelectionModel().isSelected(i)) {
+                    actorRoleModRelList.getItems().clear();
+                }
+            }
+        } else {
+            alert.close();
+        }
     }
 
     @FXML
@@ -337,14 +464,18 @@ public class Controller implements Initializable {
     // + Genre management block -----------------------------------------------------------------------------------
 
     @FXML
-    private JFXButton updateGenreButton, delGenreButton;
+    private JFXButton updateGenreButton, delGenreButton, genreModRel;
 
     @FXML
     private JFXListView<Genre> genreGenreListBox;
 
     @FXML
+    private JFXListView<Movie> genreMovieListBox;
+
+    @FXML
     private JFXTextArea genreDescTxt;
 
+    // + - adding new genre to DB ---------------------------------------------------------------------------------
     @FXML
     private void genreAddAction(ActionEvent event) {
         Genre genre = new Genre();
@@ -353,22 +484,39 @@ public class Controller implements Initializable {
 
         genreRepository.save(genre);
         genreGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
+        genreMovieListBox.getItems().clear();
+
+        delGenreButton.setDisable(true);
+        updateGenreButton.setDisable(true);
+        genreModRel.setDisable(true);
+
         log.info("Genre with description " + genre.getDesc_genre() + " was successfully added");
     }
 
+    // + - same method as for person, movie and roles -------------------------------------------------------------
     @FXML
     private void genreGenreActionEvent(MouseEvent event) {
         delGenreButton.setDisable(false);
         updateGenreButton.setDisable(false);
+        genreModRel.setDisable(false);
 
         Genre genre = genreGenreListBox.getSelectionModel().getSelectedItem();
+
+        genreMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByGenre(genre.getId_genre())));
 
         genreDescTxt.setText(genre.getDesc_genre());
 
         delGenreButton.setOnMouseClicked(deleteButton -> {
             if (genreRepository.existsById(genre.getId_genre())) {
+
                 genreRepository.deleteById(genre.getId_genre());
                 genreGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
+                genreMovieListBox.getItems().clear();
+
+                delGenreButton.setDisable(true);
+                updateGenreButton.setDisable(true);
+                genreModRel.setDisable(true);
+
                 log.info("Genre with ID " + genre.getId_genre() + " and description " + genre.getDesc_genre() + " was successfully deleted");
             }
         });
@@ -380,7 +528,13 @@ public class Controller implements Initializable {
 
                 genreRepository.save(genre);
                 genreGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
-                log.info("Genre with description " + genre.getDesc_genre() + " was successfully added");
+                genreMovieListBox.getItems().clear();
+
+                delGenreButton.setDisable(true);
+                updateGenreButton.setDisable(true);
+                genreModRel.setDisable(true);
+
+                log.info("Genre with description " + genre.getDesc_genre() + " was successfully updated");
             }
         });
     }
@@ -390,7 +544,29 @@ public class Controller implements Initializable {
         genreDescTxt.clear();
     }
 
-    // + Mod rel Block --------------------------
+    // + - same as for roles, but for genres, instead of person window, we are going to movie window
+    @FXML
+    private void goToMovie(ActionEvent event) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Modification info");
+        alert.setHeaderText("For modification, you'd better to go to Movie page");
+        alert.setContentText("Are you ok with this?");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            genrePane.setVisible(false);
+            moviePane.setVisible(true);
+            for (int i = 0; i < movieMovieListBox.getItems().size(); i++) {
+                if (movieMovieListBox.getSelectionModel().isSelected(i)) {
+                    movieGenreModRelList.setItems(FXCollections.observableArrayList(genreRepository.findGenreByMovie(movie.getId_movie())));
+                }
+            }
+        } else {
+            alert.close();
+        }
+    }
+
+    // + Mod actors rel Block -----------------------------------------------------------------------------------
 
     @FXML
     private JFXListView<Movie> actorMovieModRelList;
@@ -409,7 +585,7 @@ public class Controller implements Initializable {
 
     // + checking and setting movie from movieListView to further adding relationships
     @FXML
-    private void movieActorModRelListAction(MouseEvent event) {
+    private void actorMovieModRelListAction(MouseEvent event) {
 
         movie = actorMovieModRelList.getSelectionModel().getSelectedItem();
 
@@ -420,7 +596,7 @@ public class Controller implements Initializable {
 
     // + checking and setting role from rolesListView to further adding relationships
     @FXML
-    private void roleActorModRelListAction(MouseEvent event) {
+    private void actorRoleModRelListAction(MouseEvent event) {
 
         roles = actorRoleModRelList.getSelectionModel().getSelectedItem();
 
@@ -434,11 +610,17 @@ public class Controller implements Initializable {
     @FXML
     private void startActorModRel(ActionEvent event) {
         modActorRelPane.setVisible(true);
-        delRelButtonActor.setDisable(true);
+
+        // + updating data in listView
+        actorMovieModRelList.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
+        actorRoleModRelList.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
+
+        // + updating data in listView
+        actorMovieParticipationList.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
+        actorRolesParticipationList.getItems().clear();
+        actorMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
 
         // + setting movie from selected object of lisView and updating existing roles in this relationship
-        actorMovieParticipationList.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
-        actorMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
         actorMovieParticipationList.setOnMouseClicked(event1 -> {
             movie = actorMovieParticipationList.getSelectionModel().getSelectedItem();
 
@@ -460,16 +642,21 @@ public class Controller implements Initializable {
         addRelButtonActor.setOnMouseClicked(addRelButtonActorEvent -> {
             participateRepository.save(new Participate(new ParticipateKey(person.getId_person(), movie.getId_movie(), roles.getId_role()), movie, person,
                     roles));
+
             actorMovieParticipationList.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
+            actorRolesParticipationList.getItems().clear();
+
             log.info("Person with ID " + person.getId_person() + " and name " + person.getName() + " now participate in movie " +
                     movie.getTitle() + " with role " + roles.getDesc_role());
         });
         // + del rel. button
         delRelButtonActor.setOnMouseClicked(delRelButtonActorEvent -> {
             participateRepository.deleteParticipate(person.getId_person(), movie.getId_movie(), roles.getId_role());
-            log.info("Participation was deleted");
+
             actorMovieParticipationList.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
             actorRolesParticipationList.setItems(FXCollections.observableArrayList(roleRepository.findRolesByMovie(movie.getId_movie(), person.getId_person())));
+
+            log.info("Participation of person " + person.getName() + " was deleted");
         });
     }
 
@@ -478,7 +665,7 @@ public class Controller implements Initializable {
     // + role and movie he wants to delete from bottom lists
 
     private void checkActorParticipationRelSelection() {
-        for (int i = -1; i < actorMovieModRelList.getItems().size(); i++) {
+        for (int i = 0; i < actorMovieModRelList.getItems().size(); i++) {
             if (actorMovieParticipationList.getSelectionModel().isSelected(i)) {
 
                 actorMovieModRelList.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
@@ -486,23 +673,225 @@ public class Controller implements Initializable {
             }
             if (actorRolesParticipationList.getSelectionModel().isSelected(i)) {
                 delRelButtonActor.setDisable(false);
+                addRelButtonActor.setDisable(true);
             }
         }
     }
 
     private void checkActorRelSelection() {
-        for (int i = -1; i < actorMovieModRelList.getItems().size(); i++) {
+        for (int i = 0; i < actorMovieModRelList.getItems().size(); i++) {
             if (actorMovieModRelList.getSelectionModel().isSelected(i) || actorRoleModRelList.getSelectionModel().isSelected(i)) {
 
                 actorMovieParticipationList.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
                 actorRolesParticipationList.getItems().clear();
 
                 delRelButtonActor.setDisable(true);
+                addRelButtonActor.setDisable(false);
             }
         }
     }
 
-    // + there i have button events handlers, at this moment i wasnt able to implement this better, but i dont like it.
+    // + Mod actors rel Block -----------------------------------------------------------------------------------
+
+    @FXML
+    private JFXListView<Person> movieActorModRelList;
+
+    @FXML
+    private JFXListView<Roles> movieRoleModRelList;
+
+    @FXML
+    private JFXListView<Genre> movieGenreModRelList;
+
+    @FXML
+    private JFXListView<Person> movieActorParticipationList;
+
+    @FXML
+    private JFXListView<Roles> movieRoleParticipationList;
+
+    @FXML
+    private JFXListView<Genre> movieGenreParticipationList;
+
+    @FXML
+    private JFXButton addRelButtonMovie, delRelButtonMovie, delRelGenreButtonMovie, addRelGenreButtonMovie;
+
+    // + checking and setting person from rolesListView to further adding relationships
+
+    @FXML
+    private void movieActorModRelListAction(MouseEvent event) {
+
+        person = movieActorModRelList.getSelectionModel().getSelectedItem();
+
+        checkMovieRelSelection();
+
+        log.info("yo have selected movie with ID - " + person.getId_person());
+    }
+
+    // + checking and setting role from rolesListView to further adding relationships
+
+    @FXML
+    private void movieRoleModRelListAction(MouseEvent event) {
+
+        roles = movieRoleModRelList.getSelectionModel().getSelectedItem();
+
+        checkMovieRelSelection();
+
+        log.info("yo have selected role with ID - " + roles.getId_role());
+    }
+
+    // + checking and setting genre from rolesListView to further adding relationships
+
+    @FXML
+    private void movieGenreModRelListAction(MouseEvent event) {
+
+        genre = movieGenreModRelList.getSelectionModel().getSelectedItem();
+
+        checkMovieRelSelectionForGenre();
+
+        log.info("yo have selected genre with ID - " + genre.getId_genre());
+    }
+
+    @FXML
+    private void startMovieModRel(ActionEvent event) {
+        modMovieRelPane.setVisible(true);
+
+        // + updating data in listView
+        movieActorModRelList.setItems(FXCollections.observableArrayList(personRepository.findAll()));
+        movieRoleModRelList.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
+        movieGenreModRelList.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
+
+        // + updating data in listView
+        movieActorParticipationList.setItems(FXCollections.observableArrayList(personRepository.findPersonByMovie(movie.getId_movie())));
+        movieRoleParticipationList.getItems().clear();
+        moviePersonListBox.setItems(FXCollections.observableArrayList(personRepository.findPersonByMovie(movie.getId_movie())));
+        movieGenreParticipationList.setItems(FXCollections.observableArrayList(genreRepository.findGenreByMovie(movie.getId_movie())));
+
+        // + setting person from selected object of lisView and updating existing roles in this relationship
+        movieActorParticipationList.setOnMouseClicked(event1 -> {
+            person = movieActorParticipationList.getSelectionModel().getSelectedItem();
+
+            log.info("You have selected person with ID - " + person.getId_person() + " and name " + person.getName());
+            movieRoleParticipationList.setItems(FXCollections.observableArrayList(roleRepository.findRolesByMovie(movie.getId_movie(), person.getId_person())));
+
+            checkMovieParticipationRelSelection();
+
+            delRelButtonMovie.setDisable(true);
+        });
+        // + setting role from selected object of lisView
+        movieRoleParticipationList.setOnMouseClicked(event1 -> {
+            roles = movieRoleParticipationList.getSelectionModel().getSelectedItem();
+
+            checkMovieParticipationRelSelection();
+
+            log.info("You have selected role with ID - " + roles.getId_role());
+        });
+        // + setting genre from selected object of lisView
+        movieGenreParticipationList.setOnMouseClicked(event1 -> {
+            genre = movieGenreModRelList.getSelectionModel().getSelectedItem();
+
+            checkMovieParticipationRelSelectionForGenre();
+
+            log.info("You have selected genre with ID - " + genre.getId_genre());
+        });
+
+        // + add Person rel. button
+        addRelButtonMovie.setOnMouseClicked(addRelButtonActorEvent -> {
+            participateRepository.save(new Participate(new ParticipateKey(person.getId_person(), movie.getId_movie(), roles.getId_role()), movie, person,
+                    roles));
+
+            movieActorParticipationList.setItems(FXCollections.observableArrayList(personRepository.findPersonByMovie(movie.getId_movie())));
+            movieRoleParticipationList.getItems().clear();
+
+            log.info("Movie with ID " + movie.getId_movie() + " and title " + movie.getId_movie() + " now participate in movie " +
+                    movie.getTitle() + " with role " + roles.getDesc_role());
+        });
+
+        // + add Genre rel. button
+        addRelGenreButtonMovie.setOnMouseClicked(addRelGenreButtonMovieEvent -> {
+            movieGenRepository.save(new MovieGen(new MovieGenKey(genre.getId_genre(), movie.getId_movie()), movie, genre));
+
+            movieGenreParticipationList.setItems(FXCollections.observableArrayList(genreRepository.findGenreByMovie(movie.getId_movie())));
+            log.info("Movie with ID " + movie.getId_movie() + " and title " + movie.getId_movie() + " now have genre " +
+                    genre.getDesc_genre() + " with ID " + genre.getId_genre());
+        });
+        // + del person rel. button
+        delRelButtonMovie.setOnMouseClicked(delRelButtonActorEvent -> {
+            participateRepository.deleteParticipate(person.getId_person(), movie.getId_movie(), roles.getId_role());
+
+            movieActorParticipationList.setItems(FXCollections.observableArrayList(personRepository.findPersonByMovie(person.getId_person())));
+            movieRoleParticipationList.setItems(FXCollections.observableArrayList(roleRepository.findRolesByMovie(movie.getId_movie(), person.getId_person())));
+
+            log.info("Participation of person " + person.getName() + " was deleted");
+        });
+        // + del genre rel. button
+        delRelGenreButtonMovie.setOnMouseClicked(delRelGenreButtonMovieEvent -> {
+            movieGenRepository.deleteMovieGen(movie.getId_movie(), genre.getId_genre());
+
+            movieGenreParticipationList.setItems(FXCollections.observableArrayList(genreRepository.findGenreByMovie(movie.getId_movie())));
+
+            log.info("Genre with desc" + genre.getDesc_genre() + " was deleted from movie " + movie.getTitle() + " successfully");
+        });
+    }
+
+    // + Same methods as for a person mod. rel. block, deselection and blocking buttons by updating listView data
+
+    private void checkMovieParticipationRelSelection() {
+        for (int i = 0; i < movieActorModRelList.getItems().size() + movieRoleModRelList.getItems().size(); i++) {
+            if (movieActorParticipationList.getSelectionModel().isSelected(i)) {
+
+                movieActorModRelList.setItems(FXCollections.observableArrayList(personRepository.findAll()));
+                movieRoleModRelList.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
+
+                addRelButtonMovie.setDisable(true);
+            }
+            if (movieRoleParticipationList.getSelectionModel().isSelected(i)) {
+
+                delRelButtonMovie.setDisable(false);
+            }
+        }
+    }
+
+    private void checkMovieRelSelection() {
+        for (int i = 0; i < movieActorModRelList.getItems().size() + movieRoleModRelList.getItems().size(); i++) {
+            if (movieActorModRelList.getSelectionModel().isSelected(i) || movieRoleModRelList.getSelectionModel().isSelected(i)) {
+
+                movieActorParticipationList.setItems(FXCollections.observableArrayList(personRepository.findPersonByMovie(movie.getId_movie())));
+                movieRoleParticipationList.getItems().clear();
+
+                delRelButtonMovie.setDisable(true);
+            }
+            for (int j = 0; j < movieActorModRelList.getItems().size() + movieRoleModRelList.getItems().size(); j++) {
+                if (movieActorModRelList.getSelectionModel().isSelected(i) && movieRoleModRelList.getSelectionModel().isSelected(j)) {
+                    addRelButtonMovie.setDisable(false);
+                }
+            }
+        }
+    }
+
+    private void checkMovieRelSelectionForGenre() {
+        for (int i = 0; i < movieActorModRelList.getItems().size() + movieRoleModRelList.getItems().size(); i++) {
+            if (movieGenreModRelList.getSelectionModel().isSelected(i)) {
+
+                movieGenreParticipationList.setItems(FXCollections.observableArrayList(genreRepository.findGenreByMovie(movie.getId_movie())));
+
+                delRelGenreButtonMovie.setDisable(true);
+                addRelGenreButtonMovie.setDisable(false);
+            }
+        }
+    }
+
+    private void checkMovieParticipationRelSelectionForGenre() {
+        for (int i = 0; i < movieActorModRelList.getItems().size() + movieRoleModRelList.getItems().size(); i++) {
+            if (movieGenreParticipationList.getSelectionModel().isSelected(i)) {
+
+                movieGenreModRelList.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
+
+                addRelGenreButtonMovie.setDisable(true);
+                delRelGenreButtonMovie.setDisable(false);
+            }
+        }
+    }
+
+    // + there i have button events handlers, at this moment i wasn't able to implement this better, but i dont like it.
 
     @FXML
     private void handleButtonAction(ActionEvent event) {
@@ -515,6 +904,11 @@ public class Controller implements Initializable {
             rolePane.setVisible(false);
             homePane.setVisible(false);
 
+            movieGenreListBox.getItems().clear();
+            moviePersonListBox.getItems().clear();
+            movieRolesListBox.getItems().clear();
+            movieMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
+
         } else if (event.getSource() == mngGenres) {
 
             genrePane.setVisible(true);
@@ -523,6 +917,9 @@ public class Controller implements Initializable {
             actorPane.setVisible(false);
             rolePane.setVisible(false);
             homePane.setVisible(false);
+
+            genreMovieListBox.getItems().clear();
+            genreGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
 
         } else if (event.getSource() == mngActors) {
 
@@ -533,14 +930,24 @@ public class Controller implements Initializable {
             rolePane.setVisible(false);
             homePane.setVisible(false);
 
+            actorMovieListBox.getItems().clear();
+            actorRolesListBox.getItems().clear();
+            actorActorListBox.setItems(FXCollections.observableArrayList(personRepository.findAll()));
+
         } else if (event.getSource() == mngRoles) {
 
+            //noinspection DuplicatedCode
             rolePane.setVisible(true);
 
             moviePane.setVisible(false);
             genrePane.setVisible(false);
             actorPane.setVisible(false);
             homePane.setVisible(false);
+
+            roleMovieListBox.getItems().clear();
+            roleActorListBox.getItems().clear();
+            roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
+
 
         } else if (event.getSource() == homeButton) {
 
@@ -576,9 +983,15 @@ public class Controller implements Initializable {
     private void handleButtonActionModRel(ActionEvent event) {
         if (event.getSource() == backFromActorModRel) {
             modActorRelPane.setVisible(false);
+            actorMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
+            actorRolesListBox.getItems().clear();
         }
-        actorMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
-        actorRolesListBox.getItems().clear();
+        if (event.getSource() == backFromMovieModRel) {
+            modMovieRelPane.setVisible(false);
+            moviePersonListBox.setItems(FXCollections.observableArrayList(personRepository.findPersonByMovie(person.getId_person())));
+            movieGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findGenreByMovie(movie.getId_movie())));
+            movieRolesListBox.getItems().clear();
+        }
     }
 
     // + - adding image to ImageView in actorPane or moviePane
@@ -623,6 +1036,27 @@ public class Controller implements Initializable {
         return fileName;
     }
 
+    // + - i won't provide delete function to user :)
+    @FXML
+    private void deleteDbAlert() {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Delete DB Alert");
+        alert.setHeaderText("Are you really want delete all the data?");
+        alert.setContentText("Choose wisely");
+
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.get() == ButtonType.OK){
+            Alert alert2 = new Alert(Alert.AlertType.ERROR);
+            alert2.setTitle("Error Dialog");
+            alert2.setHeaderText("You really wanted to do this?");
+            alert2.setContentText("Well, you won't do this.");
+
+            alert2.showAndWait();
+        } else {
+            alert.close();
+        }
+    }
+
     // + - very strange realization of slider, and other functionality, like taking info from DB to listBox
 
     @Override
@@ -630,18 +1064,6 @@ public class Controller implements Initializable {
 
         movieReleaseTxt.setValue(LocalDate.now());
         birthDateTxt.setValue(LocalDate.now());
-
-        actorActorListBox.setItems(FXCollections.observableArrayList(personRepository.findAll()));
-
-        roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
-
-        movieMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
-
-        genreGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
-
-        actorMovieModRelList.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
-
-        actorRoleModRelList.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
 
         exit.setOnMouseClicked(event -> System.exit(0));
 

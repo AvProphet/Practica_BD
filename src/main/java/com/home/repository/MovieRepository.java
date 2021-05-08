@@ -14,4 +14,8 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     @Query(value = "SELECT * FROM Movie m WHERE m.id_movie in \n" +
             "(SELECT id_movie FROM Participate WHERE id_person=:id_person)", nativeQuery = true)
     List<Movie> findMoviesByPerson(@Param("id_person") Long id_person);
+
+    @Query(value = "SELECT * FROM Movie m WHERE m.id_movie in \n" +
+            "(SELECT id_movie FROM movie_gen WHERE id_genre=:id_genre)", nativeQuery = true)
+    List<Movie> findMoviesByGenre(@Param("id_genre") Long id_genre);
 }

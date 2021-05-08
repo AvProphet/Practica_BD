@@ -17,12 +17,12 @@ public class MovieGen {
     @ManyToOne
     @MapsId("id_genre")
     @JoinColumn(name = "id_genre")
-    private Person genre;
+    private Genre genre;
 
     public MovieGen() {
     }
 
-    public MovieGen(MovieGenKey id, Movie movie, Person genre) {
+    public MovieGen(MovieGenKey id, Movie movie, Genre genre) {
         this.id = id;
         this.movie = movie;
         this.genre = genre;
@@ -44,11 +44,11 @@ public class MovieGen {
         this.movie = movie;
     }
 
-    public Person getGenre() {
+    public Genre getGenre() {
         return genre;
     }
 
-    public void setGenre(Person genre) {
+    public void setGenre(Genre genre) {
         this.genre = genre;
     }
 }
