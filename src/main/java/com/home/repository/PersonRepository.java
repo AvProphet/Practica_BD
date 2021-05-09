@@ -14,4 +14,8 @@ public interface PersonRepository extends JpaRepository<Person, Long> {
     @Query(value = "SELECT * FROM person p WHERE p.id_person in \n" +
             "(SELECT participate.id_person FROM Participate WHERE id_movie=:id_movie)", nativeQuery = true)
     List<Person> findPersonByMovie(@Param("id_movie") Long id_movie);
+
+    @Query(value = "SELECT * FROM person p WHERE p.id_person in \n" +
+            "(SELECT participate.id_person FROM Participate WHERE id_role=:id_role)", nativeQuery = true)
+    List<Person> findPersonByRole(@Param("id_role") Long id_role);
 }

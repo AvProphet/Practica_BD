@@ -15,6 +15,7 @@ public class Genre {
     @OneToMany(mappedBy = "genre", cascade = CascadeType.REMOVE)
     List<MovieGen> movieGens;
 
+    @Column(unique = true)
     private String desc_genre;
 
     public Genre(Long id_genre, String desc_genre) {

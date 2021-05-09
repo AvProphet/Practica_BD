@@ -1,6 +1,8 @@
 package com.home;
 
 import com.home.entity.*;
+import com.home.exception.NullFieldsException;
+import com.home.exception.TooShortNameException;
 import com.home.repository.*;
 import com.jfoenix.controls.*;
 import javafx.animation.TranslateTransition;
@@ -27,13 +29,14 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
-
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 @Slf4j
 @Component
 public class Controller implements Initializable {
+
+    // + - IMPORTANT, I'M USING HIGHLIGHTED COMMENTS PLUGIN (COMMENTED HIGHLIGHTER)
 
     private Person person = new Person();
 
@@ -108,14 +111,52 @@ public class Controller implements Initializable {
 
         setPersonFields(person);
 
+        if (personExceptionHandler(person)) return;
+
         personRepository.save(person);
+
+        updateForActors();
+
+        log.info("Person with name " + person.getName() + " was successfully added");
+    }
+
+    // + - updating all the data
+    private void updateForActors() {
         actorActorListBox.setItems(FXCollections.observableArrayList(personRepository.findAll()));
+        actorRolesListBox.getItems().clear();
+        actorMovieListBox.getItems().clear();
 
         delPersonButton.setDisable(true);
         updatePersonBtn.setDisable(true);
         actorModRel.setDisable(true);
+    }
 
-        log.info("Person with name " + person.getName() + " was successfully added");
+    // + - Checking for null method
+    private boolean personExceptionHandler(Person person) {
+        try {
+            if ((person.getName().trim().length() | person.getSecond_name().trim().length()) < 2) throw new TooShortNameException();
+            else if ((person.getNationality().trim().length() | person.getCity_birth().trim().length() | person.getCountry_birth().trim().length()) == 0)
+                throw new NullFieldsException();
+        } catch (TooShortNameException e) {
+            updateForActors();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("The  Name or Second name may contain at least 2 characters");
+
+            alert.showAndWait();
+            return true;
+        } catch (NullFieldsException e) {
+            updateForActors();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("You can't have fields with no data");
+
+            alert.showAndWait();
+            return true;
+        }
+        return false;
     }
 
     // + Update and delete actions on person --------------------------------------------------
@@ -142,36 +183,35 @@ public class Controller implements Initializable {
 
         actorImage.setImage(new Image("/images/" + person.getPhoto_person()));
 
+        // + - delete button for actor
         delPersonButton.setOnMouseClicked(deleteEvent -> {
 
             if (personRepository.existsById(person.getId_person())) {
 
                 personRepository.deleteById(person.getId_person());
-                actorActorListBox.setItems(FXCollections.observableArrayList(personRepository.findAll()));
 
-                delPersonButton.setDisable(true);
-                updatePersonBtn.setDisable(true);
-                actorModRel.setDisable(true);
+                updateForActors();
 
                 log.info("Person with ID " + person.getId_person() + " and name " + person.getName() + " was successfully deleted");
             }
         });
 
+        // + - update button for actor
         updatePersonBtn.setOnMouseClicked(updateEvent -> {
             if (personRepository.existsById(person.getId_person())) {
 
                 try {
                     setPersonFields(person);
+
+                    if (personExceptionHandler(person)) return;
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
                 personRepository.save(person);
-                actorActorListBox.setItems(FXCollections.observableArrayList(personRepository.findAll()));
 
-                delPersonButton.setDisable(true);
-                updatePersonBtn.setDisable(true);
-                actorModRel.setDisable(true);
+                updateForActors();
 
                 log.info("Person with ID " + person.getId_person() + " and name " + person.getName() + " was successfully updated");
             }
@@ -251,7 +291,16 @@ public class Controller implements Initializable {
 
         setMovieFields(movie);
 
-        movieRepository.save(movie);
+        if (movieExceptionHandler(movie)) return;
+
+        if (uniqueMovieTitleCheck(movie)) return;
+
+        updateForMovie();
+
+        log.info("Movie with title " + movie.getTitle() + " was successfully added");
+    }
+
+    private void updateForMovie() {
         movieMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
         movieRolesListBox.getItems().clear();
         moviePersonListBox.getItems().clear();
@@ -260,8 +309,6 @@ public class Controller implements Initializable {
         delMovieButton.setDisable(true);
         updateMovieBtn.setDisable(true);
         movieModRel.setDisable(true);
-
-        log.info("Movie with title " + movie.getTitle() + " was successfully added");
     }
 
     // + method for some actions you can make with movie, deleting, updating, selection of object, searching for the related things
@@ -291,16 +338,11 @@ public class Controller implements Initializable {
             if (movieRepository.existsById(movie.getId_movie())) {
 
                 movieRepository.deleteById(movie.getId_movie());
-                movieMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
-                movieRolesListBox.getItems().clear();
-                moviePersonListBox.getItems().clear();
-                movieGenreListBox.getItems().clear();
+
+                updateForMovie();
 
                 log.info("Movie with ID " + movie.getId_movie() + " and title " + movie.getTitle() + " was successfully deleted");
 
-                delMovieButton.setDisable(true);
-                updateMovieBtn.setDisable(true);
-                movieModRel.setDisable(true);
             }
         });
 
@@ -310,20 +352,66 @@ public class Controller implements Initializable {
 
                 try {
                     setMovieFields(movie);
+
+                    if (movieExceptionHandler(movie)) return;
+
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
 
-                movieRepository.save(movie);
-                movieMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findAll()));
+                if (uniqueMovieTitleCheck(movie)) return;
+
+                updateForMovie();
 
                 log.info("Movie with ID " + movie.getId_movie() + " and title " + movie.getTitle() + " was successfully updated");
 
-                delMovieButton.setDisable(true);
-                updateMovieBtn.setDisable(true);
-                movieModRel.setDisable(true);
             }
         });
+    }
+
+    // + - checking title for unique name
+    private boolean uniqueMovieTitleCheck(Movie movie) {
+        try {
+            movieRepository.save(movie);
+        } catch (Exception e) {
+            updateForMovie();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("The title is a unique valor");
+
+            alert.showAndWait();
+            return true;
+        }
+        return false;
+    }
+
+    // + - checking fields for null or too short names
+    private boolean movieExceptionHandler(Movie movie) {
+        try {
+            if ((movie.getTitle().trim().length() | movie.getEs_title().trim().length()) < 2) throw new TooShortNameException();
+            else if ((movie.getDuration().trim().length() | movie.getSynopsis().trim().length()) == 0)
+                throw new NullFieldsException();
+        } catch (TooShortNameException e) {
+            updateForMovie();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Titles may contain at least 2 characters");
+
+            alert.showAndWait();
+            return true;
+        } catch (NullFieldsException e) {
+            updateForMovie();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("You can't have fields with no data");
+
+            alert.showAndWait();
+            return true;
+        }
+        return false;
     }
 
     // + - setting for the roles of person in the selected movie
@@ -336,6 +424,7 @@ public class Controller implements Initializable {
 
     }
 
+    // + - clearing movie fields
     @FXML
     private void movieClearAction(ActionEvent event) {
         movieTitleTxt.clear();
@@ -381,14 +470,9 @@ public class Controller implements Initializable {
     private void roleAddAction(ActionEvent event) {
         Roles role = new Roles();
 
-        role.setDesc_role(roleDescTxt.getText());
+        if (uniqueRolesDescCheck(role)) return;
 
-        roleRepository.save(role);
-        roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
-
-        deleteRoleButton.setDisable(true);
-        updateRoleButton.setDisable(true);
-        roleModButton.setDisable(true);
+        updateForRole();
 
         log.info("Genre with description " + role.getDesc_role() + " was successfully added");
     }
@@ -402,36 +486,81 @@ public class Controller implements Initializable {
 
         Roles roles = roleRoleListBox.getSelectionModel().getSelectedItem();
 
+        log.info("You have selected role with ID " + roles.getId_role() + " and description " + roles.getDesc_role());
+
         roleDescTxt.setText(roles.getDesc_role());
+
+        roleActorListBox.setItems(FXCollections.observableArrayList(personRepository.findPersonByRole(roles.getId_role())));
 
         deleteRoleButton.setOnMouseClicked(deleteButton -> {
             if (roleRepository.existsById(roles.getId_role())) {
                 roleRepository.deleteById(roles.getId_role());
-                roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
 
-                deleteRoleButton.setDisable(true);
-                updateRoleButton.setDisable(true);
-                roleModButton.setDisable(true);
+                updateForRole();
 
                 log.info("Role with ID " + roles.getId_role() + " and description " + roles.getDesc_role() + " was successfully deleted");
             }
         });
 
+        // + - update button for roles
         updateRoleButton.setOnMouseClicked(updateButton -> {
             if (roleRepository.existsById(roles.getId_role())) {
 
-                roles.setDesc_role(roleDescTxt.getText());
+                if (uniqueRolesDescCheck(roles)) return;
 
-                roleRepository.save(roles);
-                roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
+                updateForRole();
 
-                deleteRoleButton.setDisable(true);
-                updateRoleButton.setDisable(true);
-                roleModButton.setDisable(true);
-
-                log.info("Genre with description " + roles.getDesc_role() + " was successfully added");
+                log.info("Genre with description " + roles.getDesc_role() + " was successfully updated");
             }
         });
+    }
+
+    private void updateForRole() {
+        roleRoleListBox.setItems(FXCollections.observableArrayList(roleRepository.findAll()));
+
+        deleteRoleButton.setDisable(true);
+        updateRoleButton.setDisable(true);
+        roleModButton.setDisable(true);
+    }
+
+
+    // + - checking for unique and null fields description
+    private boolean uniqueRolesDescCheck(Roles roles) {
+        roles.setDesc_role(roleDescTxt.getText());
+
+        try {
+            if (roles.getDesc_role().trim().length() < 3) throw new NullFieldsException();
+            roleRepository.save(roles);
+        } catch (NullFieldsException e) {
+            updateForRole();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("You must have at least 3 characters in description");
+
+            alert.showAndWait();
+            return true;
+
+        } catch (Exception e) {
+            updateForRole();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Description is a unique valor");
+
+            alert.showAndWait();
+            return true;
+        }
+        return false;
+    }
+
+    // + - setting up movies by roles
+    @FXML
+    private void rolePersonAction(MouseEvent event) {
+
+        person = roleActorListBox.getSelectionModel().getSelectedItem();
+        roleMovieListBox.setItems(FXCollections.observableArrayList(movieRepository.findMoviesByPerson(person.getId_person())));
+        log.info("You have selected person with ID " + person.getId_person());
     }
 
     // + - as we have same functions in another method, i'd made to user go to Person page to made modification instead of making same thing for this window
@@ -443,7 +572,7 @@ public class Controller implements Initializable {
         alert.setContentText("Are you ok with this?");
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
+        if (result.get() == ButtonType.OK) {
             rolePane.setVisible(false);
             actorPane.setVisible(true);
             for (int i = 0; i < actorActorListBox.getItems().size(); i++) {
@@ -456,6 +585,7 @@ public class Controller implements Initializable {
         }
     }
 
+    // + - clearing role fields
     @FXML
     private void clearRoleAction(ActionEvent event) {
         roleDescTxt.clear();
@@ -480,17 +610,20 @@ public class Controller implements Initializable {
     private void genreAddAction(ActionEvent event) {
         Genre genre = new Genre();
 
-        genre.setDesc_genre(genreDescTxt.getText());
+        if (uniqueGenreDescCheck(genre)) return;
 
-        genreRepository.save(genre);
+        updateForGenre();
+
+        log.info("Genre with description " + genre.getDesc_genre() + " was successfully added");
+    }
+
+    private void updateForGenre() {
         genreGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
         genreMovieListBox.getItems().clear();
 
         delGenreButton.setDisable(true);
         updateGenreButton.setDisable(true);
         genreModRel.setDisable(true);
-
-        log.info("Genre with description " + genre.getDesc_genre() + " was successfully added");
     }
 
     // + - same method as for person, movie and roles -------------------------------------------------------------
@@ -506,39 +639,62 @@ public class Controller implements Initializable {
 
         genreDescTxt.setText(genre.getDesc_genre());
 
+        // + - delete button for genres
         delGenreButton.setOnMouseClicked(deleteButton -> {
             if (genreRepository.existsById(genre.getId_genre())) {
 
                 genreRepository.deleteById(genre.getId_genre());
-                genreGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
-                genreMovieListBox.getItems().clear();
 
-                delGenreButton.setDisable(true);
-                updateGenreButton.setDisable(true);
-                genreModRel.setDisable(true);
+                updateForGenre();
 
                 log.info("Genre with ID " + genre.getId_genre() + " and description " + genre.getDesc_genre() + " was successfully deleted");
             }
         });
 
+
+        // + - update button for genres
         updateGenreButton.setOnMouseClicked(updateButton -> {
             if (genreRepository.existsById(genre.getId_genre())) {
 
-                genre.setDesc_genre(genreDescTxt.getText());
+                if (uniqueGenreDescCheck(genre)) return;
 
-                genreRepository.save(genre);
-                genreGenreListBox.setItems(FXCollections.observableArrayList(genreRepository.findAll()));
-                genreMovieListBox.getItems().clear();
-
-                delGenreButton.setDisable(true);
-                updateGenreButton.setDisable(true);
-                genreModRel.setDisable(true);
+                updateForGenre();
 
                 log.info("Genre with description " + genre.getDesc_genre() + " was successfully updated");
             }
         });
     }
 
+    // + - checking for null or unique field of description
+    private boolean uniqueGenreDescCheck(Genre genre) {
+        genre.setDesc_genre(genreDescTxt.getText());
+
+        try {
+            if (genre.getDesc_genre().trim().length() < 3) throw new NullFieldsException();
+            genreRepository.save(genre);
+        } catch (NullFieldsException e) {
+            updateForGenre();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("You must have at least 3 characters in description");
+
+            alert.showAndWait();
+            return true;
+        } catch (Exception e) {
+            updateForGenre();
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Error Dialog");
+            alert.setHeaderText(null);
+            alert.setContentText("Description is a unique valor");
+
+            alert.showAndWait();
+            return true;
+        }
+        return false;
+    }
+
+    // + - Clearing fields of genres
     @FXML
     private void genreClearAction(ActionEvent event) {
         genreDescTxt.clear();
@@ -553,7 +709,7 @@ public class Controller implements Initializable {
         alert.setContentText("Are you ok with this?");
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
+        if (result.get() == ButtonType.OK) {
             genrePane.setVisible(false);
             moviePane.setVisible(true);
             for (int i = 0; i < movieMovieListBox.getItems().size(); i++) {
@@ -1045,7 +1201,7 @@ public class Controller implements Initializable {
         alert.setContentText("Choose wisely");
 
         Optional<ButtonType> result = alert.showAndWait();
-        if (result.get() == ButtonType.OK){
+        if (result.get() == ButtonType.OK) {
             Alert alert2 = new Alert(Alert.AlertType.ERROR);
             alert2.setTitle("Error Dialog");
             alert2.setHeaderText("You really wanted to do this?");
@@ -1101,5 +1257,4 @@ public class Controller implements Initializable {
             });
         });
     }
-
 }

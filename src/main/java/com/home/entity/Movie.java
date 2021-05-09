@@ -19,6 +19,7 @@ public class Movie {
     @OneToMany(mappedBy = "movie", cascade = CascadeType.REMOVE)
     List<MovieGen> movieGens;
 
+    @Column(unique = true)
     private String title;
     private String es_title;
     private LocalDate release_date;

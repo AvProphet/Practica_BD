@@ -15,6 +15,7 @@ public class Roles {
     @OneToMany(mappedBy = "roles", cascade = CascadeType.REMOVE)
     List<Participate> participates;
 
+    @Column(unique = true)
     private String desc_role;
 
     public Roles(Long id_role, String desc_role) {
