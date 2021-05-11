@@ -68,7 +68,7 @@
                         <Cursor fx:constant="HAND" />
                      </cursor>
                   </JFXButton>
-                  <JFXButton layoutX="235.0" layoutY="181.0" prefHeight="27.0" prefWidth="62.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Del Img" textFill="WHITE">
+                  <JFXButton fx:id="delMovieImage" layoutX="235.0" layoutY="181.0" prefHeight="27.0" prefWidth="62.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Del Img" textFill="WHITE">
                      <cursor>
                         <Cursor fx:constant="HAND" />
                      </cursor>
@@ -80,7 +80,7 @@
                   </ImageView>
                </children>
             </AnchorPane>
-            <JFXButton fx:id="delMovieButton" disable="true" layoutX="866.0" layoutY="432.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Del mocie" textFill="WHITE" AnchorPane.bottomAnchor="307.0" AnchorPane.rightAnchor="224.0">
+            <JFXButton fx:id="delMovieButton" disable="true" layoutX="866.0" layoutY="432.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Del movie" textFill="WHITE" AnchorPane.bottomAnchor="307.0" AnchorPane.rightAnchor="224.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -175,7 +175,7 @@
                   </Text>
                </graphic>
             </Label>
-            <JFXDatePicker fx:id="movieReleaseTxt" defaultColor="#ffae00" layoutX="781.0" layoutY="534.0" prefHeight="25.0" prefWidth="354.0" AnchorPane.bottomAnchor="209.0" AnchorPane.rightAnchor="15.0" />
+            <JFXDatePicker fx:id="movieReleaseTxt" defaultColor="#ffae00" editable="false" layoutX="781.0" layoutY="534.0" prefHeight="25.0" prefWidth="354.0" AnchorPane.bottomAnchor="209.0" AnchorPane.rightAnchor="15.0" />
          </children>
       </AnchorPane>
       <AnchorPane fx:id="genrePane" layoutX="64.0" prefHeight="766.0" prefWidth="1150.0" style="-fx-background-color: #1C191F;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -277,7 +277,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </JFXButton>
-            <JFXButton layoutX="291.0" layoutY="674.0" prefHeight="27.0" prefWidth="62.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Del Img" textFill="WHITE" AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="291.0">
+            <JFXButton fx:id="delActorImage" layoutX="291.0" layoutY="674.0" prefHeight="27.0" prefWidth="62.0" style="-fx-border-color: #ffaf00; -fx-border-width: 0px 0px 2px 0px;" styleClass="menuBarItem" text="Del Img" textFill="WHITE" AnchorPane.bottomAnchor="65.0" AnchorPane.leftAnchor="291.0">
                <cursor>
                   <Cursor fx:constant="HAND" />
                </cursor>
@@ -396,7 +396,7 @@
                   </Text>
                </graphic>
             </Label>
-            <JFXDatePicker fx:id="birthDateTxt" defaultColor="#ffaf00" layoutX="921.0" layoutY="582.0" prefHeight="25.0" prefWidth="206.0" styleClass="jfx-text-field" />
+            <JFXDatePicker fx:id="birthDateTxt" defaultColor="#ffaf00" editable="false" layoutX="921.0" layoutY="582.0" prefHeight="25.0" prefWidth="206.0" styleClass="jfx-text-field" />
          </children>
       </AnchorPane>
       <AnchorPane fx:id="rolePane" prefHeight="766.0" prefWidth="1150.0" style="-fx-background-color: #1C191F;" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="65.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">

@@ -90,7 +90,7 @@ public class Controller implements Initializable {
     private JFXDatePicker birthDateTxt;
 
     @FXML
-    private JFXButton actorImageBtn, delPersonButton, updatePersonBtn, actorModRel;
+    private JFXButton actorImageBtn, delPersonButton, updatePersonBtn, actorModRel, delActorImage;
 
     @FXML
     private ImageView actorImage;
@@ -216,6 +216,10 @@ public class Controller implements Initializable {
                 log.info("Person with ID " + person.getId_person() + " and name " + person.getName() + " was successfully updated");
             }
         });
+
+        delActorImage.setOnMouseClicked(delActorImageEvent -> {
+            actorImage.setImage(new Image("/images/defaultIcon.png"));
+        });
     }
 
     // + Finding persons with the roles in the selected movie
@@ -267,7 +271,7 @@ public class Controller implements Initializable {
     private JFXTextArea movieDescTxt;
 
     @FXML
-    private JFXButton movieImageBtn, delMovieButton, updateMovieBtn, movieModRel;
+    private JFXButton movieImageBtn, delMovieButton, updateMovieBtn, movieModRel, delMovieImage;
 
     @FXML
     private ImageView movieImage;
@@ -366,6 +370,10 @@ public class Controller implements Initializable {
                 log.info("Movie with ID " + movie.getId_movie() + " and title " + movie.getTitle() + " was successfully updated");
 
             }
+        });
+
+        delMovieImage.setOnMouseClicked(delMovieImageEvenet -> {
+            movieImage.setImage(new Image("/images/defaultIcon.png"));
         });
     }
 
