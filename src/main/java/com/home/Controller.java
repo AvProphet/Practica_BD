@@ -217,9 +217,7 @@ public class Controller implements Initializable {
             }
         });
 
-        delActorImage.setOnMouseClicked(delActorImageEvent -> {
-            actorImage.setImage(new Image("/images/defaultIcon.png"));
-        });
+        delActorImage.setOnMouseClicked(delActorImageEvent -> actorImage.setImage(new Image("/images/defaultIcon.png")));
     }
 
     // + Finding persons with the roles in the selected movie
@@ -372,9 +370,7 @@ public class Controller implements Initializable {
             }
         });
 
-        delMovieImage.setOnMouseClicked(delMovieImageEvenet -> {
-            movieImage.setImage(new Image("/images/defaultIcon.png"));
-        });
+        delMovieImage.setOnMouseClicked(delMovieImageEvent -> movieImage.setImage(new Image("/images/defaultIcon.png")));
     }
 
     // + - checking title for unique name
