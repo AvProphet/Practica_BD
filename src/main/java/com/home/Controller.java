@@ -134,15 +134,15 @@ public class Controller implements Initializable {
     // + - Checking for null method
     private boolean personExceptionHandler(Person person) {
         try {
-            if ((person.getName().trim().length() | person.getSecond_name().trim().length()) < 2) throw new TooShortNameException();
-            else if ((person.getNationality().trim().length() | person.getCity_birth().trim().length() | person.getCountry_birth().trim().length()) == 0)
+            if ((person.getName().trim().length() < 2) || (person.getSecond_name().trim().length()) < 2) throw new TooShortNameException();
+            else if ((person.getNationality().trim().length() == 0) || (person.getCity_birth().trim().length() == 0) || (person.getCountry_birth().trim().length()) == 0)
                 throw new NullFieldsException();
         } catch (TooShortNameException e) {
             updateForActors();
             Alert alert = new Alert(Alert.AlertType.ERROR);
             alert.setTitle("Error Dialog");
             alert.setHeaderText(null);
-            alert.setContentText("The  Name or Second name may contain at least 2 characters");
+            alert.setContentText("The Name or Second name may contain at least 2 characters");
 
             alert.showAndWait();
             return true;
@@ -257,7 +257,7 @@ public class Controller implements Initializable {
         person.setPhoto_person(fileName);
     }
 
-    // + Movie management Bloc, and we continue with this badly made structure, now i have no choice but making comments to separate all this code
+    // + Movie management Block, and we continue with this badly made structure, now i have no choice but making comments to separate all this code
 
     @FXML
     private JFXTextField movieEsTitleTxt, movieTitleTxt, movieDurationTxt;
@@ -1182,7 +1182,7 @@ public class Controller implements Initializable {
         }
     }
 
-    // + - Extraction of URI to further use within image setting in person or movie
+    // + - Extraction of URI and moving those image to the directory of the project to further use within image setting in person or movie
 
     private String fileUriExtraction(ImageView movieImage) throws IOException {
         String fileName = movieImage.getImage().getUrl();
